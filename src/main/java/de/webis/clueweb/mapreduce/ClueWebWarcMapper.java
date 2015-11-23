@@ -66,6 +66,7 @@ public class ClueWebWarcMapper extends BaseMapper<LongWritable, GenericWarcRecor
         outputJsonDoc.put("payload", payloadJson);
 
         OUTPUT_KEY.set(generateUUID(getUUIDPrefix(), docId));
+        OUTPUT_DOC.set(outputJsonDoc.toString());
         context.write(OUTPUT_KEY, OUTPUT_DOC);
         generatedCounter.increment(1);
     }
