@@ -12,7 +12,6 @@ public interface ClueWebMapReduceBase
 {
     Text OUTPUT_KEY = new Text();
     Text OUTPUT_DOC = new Text();
-    Text EMPTY_TEXT = new Text();
 
     /**
      * MapReduce counters.
@@ -39,18 +38,8 @@ public interface ClueWebMapReduceBase
         SKIPPED_RECORDS_TOO_SMALL,
 
         /**
-         * Number of skipped records that are too deeply nested.
-         */
-        SKIPPED_RECORDS_TOO_DEEP,
-
-        /**
          * Number of actual JSON docs generated.
          */
         GENERATED_DOCS,
-
-        /**
-         * Number of documents with no plain-text content after reduce stage.
-         */
-        NO_CONTENT
     }
 }
