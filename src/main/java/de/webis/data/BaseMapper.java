@@ -31,7 +31,7 @@ public abstract class BaseMapper <K extends Writable, V extends Writable> extend
     }
 
     /**
-     * Generate a version 5 (name-based SHA1) UUID based on NameSpace_URL (RFC 4122).
+     * Generate a version 5 (name-based SHA1) UUID within NameSpace_URL (RFC 4122).
      * The hashed name part is prefix:internalId.
      *
      * @param prefix the scheme prefix
