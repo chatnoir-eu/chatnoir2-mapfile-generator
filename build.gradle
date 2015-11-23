@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+version = '1.0'
+
+allprojects {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.hadoop:hadoop-client:2.6.0'
+    compile 'org.slf4j:slf4j-api:1.4.3'
+}
