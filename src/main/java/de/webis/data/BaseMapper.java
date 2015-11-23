@@ -18,12 +18,12 @@ import java.security.NoSuchAlgorithmException;
  */
 public abstract class BaseMapper <K extends Writable, V extends Writable> extends Mapper<K, V, Text, Text>
 {
-    private String mUUIDPrefix = "";
+    // RFC 4122 defines 6ba7b811-9dad-11d1-80b4-00c04fd430c8
+    private static final byte[] UUID_NAMESPACE_URL = { 107, -89, -72, 17, -99, -83, 17, -47, -128, -76, 0, -64, 79, -44, 48, -56 };
+
     protected static final Logger LOG = Logger.getLogger(BaseMapper.class);
 
-    // RFC 4122 defines 6ba7b811-9dad-11d1-80b4-00c04fd430c8
-    //static final byte[] UUID_NAMESPACE_URL = Hex.decodeHex("6ba7b8119dad11d180b400c04fd430c8".toCharArray());
-    static final byte[] UUID_NAMESPACE_URL = { 107, -89, -72, 17, -99, -83, 17, -47, -128, -76, 0, -64, 79, -44, 48, -56 };
+    private String mUUIDPrefix = "";
 
     protected String getUUIDPrefix()
     {
