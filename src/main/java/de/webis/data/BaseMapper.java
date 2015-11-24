@@ -53,7 +53,7 @@ public abstract class BaseMapper <K extends Writable, V extends Writable> extend
             shortened[6] |= 0x50;
 
             // set variant
-            shortened[8] &= 0x0f;
+            shortened[8] &= 0x3f;
             shortened[8] |= 0x90;
 
             // format string
