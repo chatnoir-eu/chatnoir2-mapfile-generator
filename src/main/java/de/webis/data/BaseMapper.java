@@ -54,7 +54,7 @@ public abstract class BaseMapper <K extends Writable, V extends Writable> extend
 
             // set variant
             shortened[8] &= 0x3f;
-            shortened[8] |= 0x90;
+            shortened[8] |= 0x80;
 
             // format string
             final String encodedHex = Hex.encodeHexString(shortened);
