@@ -1,6 +1,7 @@
 /*
- * Elasticsearch Indexer for ClueWeb09/12 using Hadoop MapReduce.
- * Based on ClueWeb Tools <https://github.com/lintool/clueweb>
+ * Webis MapFile generator.
+ * Copyright (C) 2015 Janek Bevendorff <janek.bevendorff@uni-weimar.de>
+ * Parts of this program are based on ClueWeb Tools <https://github.com/lintool/clueweb>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you
  * may not use this file except in compliance with the License. You may
@@ -42,7 +43,7 @@ import java.util.List;
 /**
  * Generic MapFile generator for web corpora.
  *
- * @author Janek Bevendorff
+ * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
  * @version 1
  */
 public class MapFileGenerator extends Configured implements Tool
