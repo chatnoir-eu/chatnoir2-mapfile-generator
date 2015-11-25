@@ -34,7 +34,7 @@ public class WarcRecord implements Writable
     private final WarcHeader mWarcHeader;
     private byte[] mWarcContent = null;
 
-    public WarcRecord(final WarcHeader header)
+    protected WarcRecord(final WarcHeader header)
     {
         mWarcHeader = header;
     }
