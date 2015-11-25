@@ -1,7 +1,6 @@
 package de.webis.warc;
 
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.util.Options;
 
 import java.io.*;
 import java.util.HashMap;
