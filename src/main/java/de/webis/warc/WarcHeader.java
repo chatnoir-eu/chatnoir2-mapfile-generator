@@ -1,0 +1,164 @@
+package de.webis.warc;
+
+import org.apache.hadoop.io.Writable;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * WARC header class.
+ */
+public class WarcHeader implements Writable
+{
+    public enum WarcVersion {
+        WARC10 {
+            public String toString() {
+                return "WARC/1.0";
+            }
+        },
+        WARC018 {
+            public String toString() {
+                return "WARC/0.18";
+            }
+        }
+    }
+
+    private static String NEWLINE = "\n";
+
+    private final WarcVersion mVersion;
+    private int mContentLength;
+    private final HashMap<String, String> mMetadata = new HashMap<>();
+
+    public WarcHeader(final WarcVersion version)
+    {
+        this(version, 0);
+    }
+
+    public WarcHeader(final WarcVersion version, final int contentLength)
+    {
+        mVersion       = version;
+        mContentLength = contentLength;
+    }
+
+    public WarcHeader(final WarcHeader header) {
+        mVersion       = header.mVersion;
+        mContentLength = header.mContentLength;
+        mMetadata.putAll(header.mMetadata);
+    }
+
+    /**
+     * Serialization output.
+     *
+     * @param out the data output stream
+     * @throws java.io.IOException
+     */
+    @Override
+    public void write(final DataOutput out) throws IOException {
+        out.writeInt(mMetadata.size());
+        for (Map.Entry<String, String> thisEntry : mMetadata.entrySet()) {
+            out.writeUTF(thisEntry.getKey());
+            out.writeUTF(thisEntry.getValue());
+        }
+        out.writeInt(mContentLength);
+    }
+
+    /**
+     * Serialization input.
+     *
+     * @param in the data input stream
+     * @throws java.io.IOException
+     */
+    @Override
+    public void readFields(final DataInput in) throws IOException {
+        mMetadata.clear();
+        int numMetaItems = in.readInt();
+        for (int i = 0; i < numMetaItems; ++i) {
+            String thisKey   = in.readUTF();
+            String thisValue = in.readUTF();
+            mMetadata.put(thisKey, thisValue);
+        }
+        mContentLength = in.readInt();
+    }
+
+    /**
+     * Set WARC content length.
+     *
+     * @param length content length
+     */
+    public void setContentLength(final int length)
+    {
+        mContentLength = length;
+    }
+
+    /**
+     * Set WARC content length.
+     *
+     * @return content length
+     */
+    public int getContentLength()
+    {
+        return mContentLength;
+    }
+
+    /**
+     * Add key-value pair of metadata to header.
+     *
+     * @param key metadata key
+     * @param value metadata value
+     */
+    public void addHeaderMetadata(final String key, final String value)
+    {
+        mMetadata.put(key, value);
+    }
+
+    /**
+     * Clear all metadata from header.
+     */
+    public void clearHeaderMetadata()
+    {
+        mMetadata.clear();
+    }
+
+    /**
+     * Get Entry Set of all metadata from header.
+     */
+    public HashMap<String, String> getHeaderMetadata()
+    {
+        return mMetadata;
+    }
+
+    /**
+     * Get a specific Entry from header metadata.
+     *
+     * @param key the item
+     */
+    public String getHeaderMetadataItem(final String key) {
+        return mMetadata.get(key);
+    }
+
+    /**
+     * Get WARC version.
+     *
+     * @return WARC version
+     */
+    public WarcVersion getWarcVersion()
+    {
+        return mVersion;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder retBuffer = new StringBuilder();
+        retBuffer.append(mVersion).append(NEWLINE);
+        for (Map.Entry<String, String> thisEntry : mMetadata.entrySet()) {
+            retBuffer.append(thisEntry.getKey()).
+                    append(": ").
+                    append(thisEntry.getValue()).
+                    append(NEWLINE);
+        }
+        return retBuffer.toString();
+    }
+}

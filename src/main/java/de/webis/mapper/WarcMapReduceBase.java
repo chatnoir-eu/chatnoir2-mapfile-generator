@@ -1,4 +1,4 @@
-package de.webis.clueweb.mapreduce;
+package de.webis.mapper;
 
 import org.apache.hadoop.io.*;
 
@@ -8,7 +8,7 @@ import org.apache.hadoop.io.*;
  * @author Janek Bevendorff
  * @version 1
  */
-public interface ClueWebMapReduceBase
+public interface WarcMapReduceBase
 {
     Text OUTPUT_KEY = new Text();
     Text OUTPUT_DOC = new Text();

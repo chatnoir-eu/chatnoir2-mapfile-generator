@@ -1,4 +1,4 @@
-package de.webis.data;
+package de.webis.mapper;
 
 import de.webis.WebisUUID;
 import org.apache.hadoop.io.Text;

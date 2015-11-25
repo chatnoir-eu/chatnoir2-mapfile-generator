@@ -1,7 +1,6 @@
 /*
  * Webis MapFile generator.
  * Copyright (C) 2015 Janek Bevendorff <janek.bevendorff@uni-weimar.de>
- * Parts of this program are based on ClueWeb Tools <https://github.com/lintool/clueweb>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you
  * may not use this file except in compliance with the License. You may
@@ -18,7 +17,9 @@
 
 package de.webis.app;
 
-import de.webis.clueweb.mapreduce.ClueWebWarcMapper;
+import de.webis.inputformats.ClueWeb09InputFormat;
+import de.webis.inputformats.ClueWeb12InputFormat;
+import de.webis.mapper.WarcMapper;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -33,9 +34,6 @@ import org.apache.hadoop.mapreduce.lib.output.MapFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
-
-import de.webis.clueweb.mapreduce.ClueWeb09InputFormat;
-import de.webis.clueweb.mapreduce.ClueWeb12InputFormat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -74,7 +72,7 @@ public class MapFileGenerator extends Configured implements Tool
     private static Class<? extends Mapper> getMapperClass(final String format)
     {
         if (format.equals("clueweb09") || format.equals("clueweb12")) {
-                return ClueWebWarcMapper.class;
+                return WarcMapper.class;
         } else {
                 throw new RuntimeException("Unsupported input format '" + format + "'");
         }
@@ -98,7 +96,7 @@ public class MapFileGenerator extends Configured implements Tool
                 withArgName("INPUT_FORMAT").
                 hasArg().
                 withLongOpt(INPUT_FORMAT_OPTION[0]).
-                withDescription("Input format for reading the corpus (e.g. clueweb, clueweb12, ...)").
+                withDescription("Input format for reading the corpus (e.g. inputformats, clueweb12, ...)").
                 isRequired().
                 create(INPUT_FORMAT_OPTION[1]));
         options.addOption(OptionBuilder.
@@ -151,10 +149,6 @@ public class MapFileGenerator extends Configured implements Tool
         // configure Hadoop for Elasticsearch
         final Configuration conf = getConf();
 
-        //conf.setBoolean("mapreduce.map.speculative", false);
-        //conf.setBoolean("mapreduce.reduce.speculative", false);
-        //conf.setBoolean("mapred.map.tasks.speculative.execution", false);
-        //conf.setBoolean("mapred.reduce.tasks.speculative.execution", false);
         conf.set("mapfile.uuid.prefix", uuidPrefix);
 
         final Job job = Job.getInstance(conf);
@@ -163,6 +157,8 @@ public class MapFileGenerator extends Configured implements Tool
         job.setOutputFormatClass(MapFileOutputFormat.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
         job.setInputFormatClass(getInputFormatClass(inputFormat));
         job.setMapperClass(getMapperClass(inputFormat));
 
