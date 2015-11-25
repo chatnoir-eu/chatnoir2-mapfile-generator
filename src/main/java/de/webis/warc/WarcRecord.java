@@ -238,6 +238,9 @@ public class WarcRecord implements Writable
         retRecord.mWarcHeader.setContentLength(recordContent.length);
         for (final String headerLine : headerLines) {
             String[] pieces = headerLine.split(":", 2);
+            if (pieces[0].trim().isEmpty()) {
+                continue;
+            }
             if (2 != pieces.length) {
                 retRecord.mWarcHeader.addHeaderMetadata(pieces[0], "");
                 continue;
