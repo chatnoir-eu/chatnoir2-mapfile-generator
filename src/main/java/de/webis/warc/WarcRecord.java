@@ -259,10 +259,12 @@ public class WarcRecord implements Writable
      * @throws java.io.IOException
      */
     @Override
-    public void write(final DataOutput out) throws IOException {
+    public void write(final DataOutput out) throws IOException
+    {
         mWarcHeader.write(out);
         out.write(mWarcContent);
     }
+
     /**
      * Serialization input.
      *
@@ -270,7 +272,8 @@ public class WarcRecord implements Writable
      * @throws java.io.IOException
      */
     @Override
-    public void readFields(final DataInput in) throws IOException {
+    public void readFields(final DataInput in) throws IOException
+    {
         mWarcHeader.readFields(in);
         mWarcContent = new byte[mWarcHeader.getContentLength()];
         in.readFully(mWarcContent);
@@ -281,7 +284,8 @@ public class WarcRecord implements Writable
      *
      * @return WARC TREC ID (may be null if record is not a valid WARC document)
      */
-    public String getDocid() {
+    public String getDocid()
+    {
         return mWarcHeader.getHeaderMetadata().get("WARC-TREC-ID");
     }
 
@@ -290,22 +294,26 @@ public class WarcRecord implements Writable
      *
      * @param content record content
      */
-    public void setContent(final byte[] content) {
+    public void setContent(final byte[] content)
+    {
         mWarcContent = content;
     }
+
     /**
      * Set String content for this record.
      *
      * @param content record content
      */
-    public void setContent(final String content) {
+    public void setContent(final String content)
+    {
         setContent(content.getBytes());
     }
 
     /**
      * Get raw byte content of this record.
      */
-    public byte[] getByteContent() {
+    public byte[] getByteContent()
+    {
         return mWarcContent;
     }
 
@@ -314,7 +322,8 @@ public class WarcRecord implements Writable
      *
      * @return full content.
      */
-    public String getFullContentString() {
+    public String getFullContentString()
+    {
         String retString;
         try {
             retString = new String(mWarcContent, "UTF-8");
@@ -329,7 +338,8 @@ public class WarcRecord implements Writable
      *
      * @return UTF-8-encoded body part of content
      */
-    public String getContent() {
+    public String getContent()
+    {
         final String str = getFullContentString();
         int i = str.indexOf(NEWLINE + NEWLINE);
 
@@ -341,7 +351,8 @@ public class WarcRecord implements Writable
      *
      * @return UTF-8-encoded body part of content
      */
-    public String getContentHeaderString() {
+    public String getContentHeaderString()
+    {
         final String str = getFullContentString();
         int i = str.indexOf(NEWLINE + NEWLINE);
 
@@ -353,7 +364,8 @@ public class WarcRecord implements Writable
      *
      * @return UTF-8-encoded body part of content
      */
-    public HashMap<String, String> getContentHeaders() {
+    public HashMap<String, String> getContentHeaders()
+    {
         final String headerString  = getContentHeaderString();
         final String[] headerLines = headerString.split(NEWLINE);
 
@@ -376,6 +388,8 @@ public class WarcRecord implements Writable
 
     /**
      * Get WARC header.
+     *
+     * @return {@link WarcHeader} instance for this record
      */
     public WarcHeader getHeader()
     {
@@ -383,7 +397,8 @@ public class WarcRecord implements Writable
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return getFullContentString();
     }
 }
