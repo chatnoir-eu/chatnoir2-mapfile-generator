@@ -96,7 +96,7 @@ public class MapFileGenerator extends Configured implements Tool
                 withArgName("INPUT_FORMAT").
                 hasArg().
                 withLongOpt(INPUT_FORMAT_OPTION[0]).
-                withDescription("Input format for reading the corpus (e.g. inputformats, clueweb12, ...)").
+                withDescription("Input format for reading the corpus (e.g. clueweb09, clueweb12, ...)").
                 isRequired().
                 create(INPUT_FORMAT_OPTION[1]));
         options.addOption(OptionBuilder.
