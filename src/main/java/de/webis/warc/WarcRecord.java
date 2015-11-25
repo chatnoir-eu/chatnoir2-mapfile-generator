@@ -272,8 +272,7 @@ public class WarcRecord implements Writable
     @Override
     public void readFields(final DataInput in) throws IOException {
         mWarcHeader.readFields(in);
-        int contentLengthBytes = mWarcHeader.getContentLength();
-        mWarcContent = new byte[contentLengthBytes];
+        mWarcContent = new byte[mWarcHeader.getContentLength()];
         in.readFully(mWarcContent);
     }
 
