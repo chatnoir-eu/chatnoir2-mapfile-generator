@@ -237,18 +237,15 @@ public class WarcRecord implements Writable
         final WarcRecord retRecord = new WarcRecord(new WarcHeader(warcVersion));
         retRecord.mWarcHeader.setContentLength(recordContent.length);
         for (final String headerLine : headerLines) {
-            String[] pieces = headerLine.split(":", 2);
+            final String[] pieces = headerLine.split(":", 2);
             if (pieces[0].trim().isEmpty()) {
                 continue;
             }
             if (2 != pieces.length) {
-                retRecord.mWarcHeader.addHeaderMetadata(pieces[0], "");
+                retRecord.mWarcHeader.addHeaderMetadata(pieces[0].trim(), "");
                 continue;
             }
-            String thisKey = pieces[0].trim();
-            String thisValue = pieces[1].trim();
-
-            retRecord.mWarcHeader.addHeaderMetadata(thisKey, thisValue);
+            retRecord.mWarcHeader.addHeaderMetadata(pieces[0].trim(), pieces[1].trim());
         }
 
         retRecord.setContent(recordContent);
