@@ -52,7 +52,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord> implements 
         OUTPUT_KEY.clear();
         OUTPUT_DOC.clear();
 
-        final String docId = value.getDocid();
+        final String docId = value.getDocId();
 
         if (null == docId) {
             LOG.info(String.format("Skipped document #%d with null ID", key.get()));
