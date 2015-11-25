@@ -38,7 +38,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord> implements 
         final String docId = value.getDocid();
 
         if (null == docId) {
-            LOG.warn(String.format("Skipped document #%d with null ID", key.get()));
+            LOG.info(String.format("Skipped document #%d with null ID", key.get()));
             nullIdCounter.increment(1);
             return;
         }
