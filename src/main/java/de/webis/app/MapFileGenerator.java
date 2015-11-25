@@ -60,20 +60,23 @@ public class MapFileGenerator extends Configured implements Tool
 
     private static Class<? extends InputFormat> getInputFormatClass(final String format)
     {
-        if (format.equals("clueweb09")) {
-            return ClueWeb09InputFormat.class;
-        } else if (format.equals("clueweb12")) {
-            return ClueWeb12InputFormat.class;
-        } else {
+        switch (format) {
+            case "clueweb09":
+                return ClueWeb09InputFormat.class;
+            case "clueweb12":
+                return ClueWeb12InputFormat.class;
+            default:
                 throw new RuntimeException("Unsupported input format '" + format + "'");
         }
     }
 
     private static Class<? extends Mapper> getMapperClass(final String format)
     {
-        if (format.equals("clueweb09") || format.equals("clueweb12")) {
+        switch (format) {
+            case "clueweb09":
+            case "clueweb12":
                 return WarcMapper.class;
-        } else {
+            default:
                 throw new RuntimeException("Unsupported input format '" + format + "'");
         }
     }
@@ -127,7 +130,7 @@ public class MapFileGenerator extends Configured implements Tool
         }
 
         final String uuidPrefix  = cmdline.getOptionValue(UUID_PREFIX_OPTION[0]);
-        final String inputPath  = cmdline.getOptionValue(INPUT_OPTION[0]);
+        final String inputPath   = cmdline.getOptionValue(INPUT_OPTION[0]);
         final String inputFormat = cmdline.getOptionValue(INPUT_FORMAT_OPTION[0]);
         final String outputPath  = cmdline.getOptionValue(OUTPUT_OPTION[0]);
 
