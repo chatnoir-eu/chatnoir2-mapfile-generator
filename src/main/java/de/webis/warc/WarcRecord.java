@@ -279,7 +279,7 @@ public class WarcRecord implements Writable
     /**
      * Get record TREC ID.
      *
-     * @return WARC TREC ID (may be null if record is no valid WARC document)
+     * @return WARC TREC ID (may be null if record is not a valid WARC document)
      */
     public String getDocid() {
         return mWarcHeader.getHeaderMetadata().get("WARC-TREC-ID");
