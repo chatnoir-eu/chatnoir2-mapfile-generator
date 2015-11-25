@@ -47,7 +47,7 @@ import java.util.List;
 public class MapFileGenerator extends Configured implements Tool
 {
     public static final String[] UUID_PREFIX_OPTION  = {"prefix", "p"};
-    public static final String[] INPUT_OPTION        = {"input", "i"};
+    public static final String[] INPUT_OPTION        = {"input",  "i"};
     public static final String[] INPUT_FORMAT_OPTION = {"format", "f"};
     public static final String[] OUTPUT_OPTION       = {"output", "o"};
 
