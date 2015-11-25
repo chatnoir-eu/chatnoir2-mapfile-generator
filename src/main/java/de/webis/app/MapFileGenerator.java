@@ -146,9 +146,7 @@ public class MapFileGenerator extends Configured implements Tool
         LOG.info(" - format: "  + inputFormat);
         LOG.info(" - output: "  + outputPath);
 
-        // configure Hadoop for Elasticsearch
         final Configuration conf = getConf();
-
         conf.set("mapfile.uuid.prefix", uuidPrefix);
 
         final Job job = Job.getInstance(conf);
