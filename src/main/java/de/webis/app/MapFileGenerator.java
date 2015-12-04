@@ -22,9 +22,7 @@ import de.webis.inputformats.ClueWeb12InputFormat;
 import de.webis.mapper.WarcMapper;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.curator.framework.imps.GzipCompressionProvider;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.GzipCodec;
@@ -33,9 +31,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MapFileOutputFormat;
-import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,14 +42,12 @@ import java.util.List;
  * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
  * @version 1
  */
-public class MapFileGenerator extends Configured implements Tool
+public class MapFileGenerator extends MapFileTool
 {
-    public static final String[] UUID_PREFIX_OPTION  = {"prefix", "p"};
-    public static final String[] INPUT_OPTION        = {"input",  "i"};
-    public static final String[] INPUT_FORMAT_OPTION = {"format", "f"};
-    public static final String[] OUTPUT_OPTION       = {"output", "o"};
-
-    private static final Logger LOG = Logger.getLogger(MapFileGenerator.class);
+    private static final String[] UUID_PREFIX_OPTION  = {"prefix", "p"};
+    private static final String[] INPUT_OPTION        = {"input",  "i"};
+    private static final String[] INPUT_FORMAT_OPTION = {"format", "f"};
+    private static final String[] OUTPUT_OPTION       = {"output", "o"};
 
     private static final List<String> SUPPORTED_INPUT_FORMATS = Arrays.asList(
             "clueweb09",
@@ -83,12 +77,9 @@ public class MapFileGenerator extends Configured implements Tool
         }
     }
 
-    /**
-     * Run this tool.
-     */
     @Override
-    @SuppressWarnings({"static-access", "Duplicates"})
-    public int run(String[] args) throws Exception
+    @SuppressWarnings("static-access")
+    public int run(final String[] args) throws Exception
     {
         final Options options = new Options();
         options.addOption(OptionBuilder.
@@ -120,16 +111,9 @@ public class MapFileGenerator extends Configured implements Tool
                 isRequired().
                 create(OUTPUT_OPTION[1]));
 
-        CommandLine cmdline;
-        final CommandLineParser parser = new GnuParser();
-        try {
-            cmdline = parser.parse(options, args);
-        } catch (ParseException exp) {
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(this.getClass().getSimpleName(), options);
-            ToolRunner.printGenericCommandUsage(System.out);
-            System.err.println("Error parsing command line: " + exp.getMessage());
-            return -1;
+        final CommandLine cmdline = parseCmdline(options, args);
+        if (null == cmdline) {
+            return 1;
         }
 
         final String uuidPrefix  = cmdline.getOptionValue(UUID_PREFIX_OPTION[0]);
@@ -174,14 +158,5 @@ public class MapFileGenerator extends Configured implements Tool
         job.waitForCompletion(true);
 
         return 0;
-    }
-    /**
-     * Dispatches command-line arguments to the tool via the <code>ToolRunner</code>.
-     */
-    public static void main(String[] args) throws Exception
-    {
-        LOG.info("Running " + MapFileGenerator.class.getSimpleName() + " with args "
-                + Arrays.toString(args));
-        System.exit(ToolRunner.run(new MapFileGenerator(), args));
     }
 }

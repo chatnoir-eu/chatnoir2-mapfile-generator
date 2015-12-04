@@ -20,17 +20,10 @@ package de.webis.app;
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.Options;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.MapFile;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
-import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * MapFile merger.
@@ -38,19 +31,14 @@ import java.util.Arrays;
  * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
  * @version 1
  */
-public class MapFileMerger extends Configured implements Tool
+public class MapFileMerger extends MapFileTool
 {
-    public static final String[] INPUT_OPTION        = {"input",  "i"};
-    public static final String[] OUTPUT_OPTION       = {"output", "o"};
+    private static final String[] INPUT_OPTION        = {"input",  "i"};
+    private static final String[] OUTPUT_OPTION       = {"output", "o"};
 
-    private static final Logger LOG = Logger.getLogger(MapFileMerger.class);
-
-    /**
-     * Run this tool.
-     */
     @Override
-    @SuppressWarnings({"static-access", "Duplicates"})
-    public int run(String[] args) throws Exception
+    @SuppressWarnings("static-access")
+    public int run(final String[] args) throws Exception
     {
         final Options options = new Options();
         options.addOption(OptionBuilder.
@@ -68,16 +56,9 @@ public class MapFileMerger extends Configured implements Tool
                 isRequired().
                 create(OUTPUT_OPTION[1]));
 
-        CommandLine cmdline;
-        final CommandLineParser parser = new GnuParser();
-        try {
-            cmdline = parser.parse(options, args);
-        } catch (ParseException exp) {
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(this.getClass().getSimpleName(), options);
-            ToolRunner.printGenericCommandUsage(System.out);
-            System.err.println("Error parsing command line: " + exp.getMessage());
-            return -1;
+        final CommandLine cmdline = parseCmdline(options, args);
+        if (null == cmdline) {
+            return 1;
         }
 
         final String inputPathStr   = cmdline.getOptionValue(INPUT_OPTION[0]);
@@ -112,15 +93,5 @@ public class MapFileMerger extends Configured implements Tool
         merger.merge(pathList.toArray(new Path[pathList.size()]), false, outputPath);
 
         return 0;
-    }
-
-    /**
-     * Dispatches command-line arguments to the tool via the <code>ToolRunner</code>.
-     */
-    public static void main(String[] args) throws Exception
-    {
-        LOG.info("Running " + MapFileMerger.class.getSimpleName() + " with args "
-                + Arrays.toString(args));
-        System.exit(ToolRunner.run(new MapFileMerger(), args));
     }
 }
