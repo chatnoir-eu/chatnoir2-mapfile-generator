@@ -82,7 +82,7 @@ public class MapFileMerger extends MapFileTool
         final ArrayList<Path> pathList = new ArrayList<>();
         for (FileStatus aStat : stat) {
             final Path p = aStat.getPath();
-            if (fs.isDirectory(p)) {
+            if (fs.isDirectory(p) && fs.exists(new Path(p.toString() + "/data"))) {
                 pathList.add(p);
             }
         }
