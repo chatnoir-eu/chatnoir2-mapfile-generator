@@ -35,7 +35,7 @@ public abstract class MapFileTool extends Configured implements Tool
     /**
      * Dispatches command-line arguments to the tool via the <code>ToolRunner</code>.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         LOG.info("Running " + MapFileGenerator.class.getSimpleName() + " with args "
                 + Arrays.toString(args));
