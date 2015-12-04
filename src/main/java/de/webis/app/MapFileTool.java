@@ -68,7 +68,7 @@ public abstract class MapFileTool extends Configured implements Tool
      * Actual run implementation. Must be provided.
      *
      * @param args given cmd args
-     * @return exit code (0 == okay)
+     * @return exit code (SUCCESS | ERROR)
      * @throws Exception
      */
     @Override
