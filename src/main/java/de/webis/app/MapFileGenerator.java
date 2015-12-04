@@ -84,7 +84,8 @@ public class MapFileGenerator extends Configured implements Tool
     /**
      * Run this tool.
      */
-    @Override @SuppressWarnings("static-access")
+    @Override
+    @SuppressWarnings({"static-access", "Duplicates"})
     public int run(String[] args) throws Exception
     {
         final Options options = new Options();
