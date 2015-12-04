@@ -23,23 +23,12 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
-
 /**
  * Base class for MapFile generation tools
  */
 public abstract class MapFileTool extends Configured implements Tool
 {
     protected static final Logger LOG = Logger.getLogger(MapFileGenerator.class);
-
-    /**
-     * Dispatches command-line arguments to the tool via the <code>ToolRunner</code>.
-     */
-    public static void main(final String[] args) throws Exception
-    {
-        LOG.info("Running MapFile tool with args " + Arrays.toString(args));
-        System.exit(ToolRunner.run(new MapFileGenerator(), args));
-    }
 
     /**
      * Parse command line arguments

@@ -159,4 +159,13 @@ public class MapFileGenerator extends MapFileTool
 
         return 0;
     }
+
+    /**
+     * Dispatches command-line arguments to the tool via the <code>ToolRunner</code>.
+     */
+    public static void main(final String[] args) throws Exception
+    {
+        LOG.info("Running " + MapFileGenerator.class.getSimpleName() + " with args " + Arrays.toString(args));
+        System.exit(ToolRunner.run(new MapFileGenerator(), args));
+    }
 }

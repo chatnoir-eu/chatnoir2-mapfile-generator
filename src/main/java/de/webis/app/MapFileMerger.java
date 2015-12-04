@@ -22,8 +22,10 @@ import org.apache.commons.cli.Options;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.MapFile;
+import org.apache.hadoop.util.ToolRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * MapFile merger.
@@ -93,5 +95,14 @@ public class MapFileMerger extends MapFileTool
         merger.merge(pathList.toArray(new Path[pathList.size()]), false, outputPath);
 
         return 0;
+    }
+
+    /**
+     * Dispatches command-line arguments to the tool via the <code>ToolRunner</code>.
+     */
+    public static void main(final String[] args) throws Exception
+    {
+        LOG.info("Running " + MapFileMerger.class.getSimpleName() + " with args " + Arrays.toString(args));
+        System.exit(ToolRunner.run(new MapFileMerger(), args));
     }
 }
