@@ -22,10 +22,12 @@ import de.webis.inputformats.ClueWeb12InputFormat;
 import de.webis.mapper.WarcMapper;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.curator.framework.imps.GzipCompressionProvider;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.GzipCodec;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -166,6 +168,7 @@ public class MapFileGenerator extends Configured implements Tool
 
         FileInputFormat.setInputPaths(job, inputPath);
         MapFileOutputFormat.setOutputPath(job, new Path(outputPath));
+        MapFileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
 
         job.waitForCompletion(true);
 
