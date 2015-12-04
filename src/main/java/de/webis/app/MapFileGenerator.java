@@ -113,7 +113,7 @@ public class MapFileGenerator extends MapFileTool
 
         final CommandLine cmdline = parseCmdline(options, args);
         if (null == cmdline) {
-            return 1;
+            return ERROR;
         }
 
         final String uuidPrefix  = cmdline.getOptionValue(UUID_PREFIX_OPTION[0]);
@@ -127,7 +127,7 @@ public class MapFileGenerator extends MapFileTool
             ToolRunner.printGenericCommandUsage(System.out);
             System.err.printf("Argument error: Input format '%s' is not supported.\nSupported input formats are: %s\n",
                     inputFormat, StringUtils.join(SUPPORTED_INPUT_FORMATS, ", "));
-            return -1;
+            return ERROR;
         }
 
         LOG.info("Tool name: " + MapFileGenerator.class.getSimpleName());
@@ -157,7 +157,7 @@ public class MapFileGenerator extends MapFileTool
 
         job.waitForCompletion(true);
 
-        return 0;
+        return SUCCESS;
     }
 
     /**

@@ -60,7 +60,7 @@ public class MapFileMerger extends MapFileTool
 
         final CommandLine cmdline = parseCmdline(options, args);
         if (null == cmdline) {
-            return 1;
+            return ERROR;
         }
 
         final String inputPathStr   = cmdline.getOptionValue(INPUT_OPTION[0]);
@@ -89,12 +89,12 @@ public class MapFileMerger extends MapFileTool
 
         if (pathList.isEmpty()) {
             LOG.error("No mapfiles found in path.");
-            return 1;
+            return ERROR;
         }
 
         merger.merge(pathList.toArray(new Path[pathList.size()]), false, outputPath);
 
-        return 0;
+        return SUCCESS;
     }
 
     /**

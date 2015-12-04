@@ -31,6 +31,16 @@ public abstract class MapFileTool extends Configured implements Tool
     protected static final Logger LOG = Logger.getLogger(MapFileGenerator.class);
 
     /**
+     * Success return code.
+     */
+    protected static final int SUCCESS = 0;
+
+    /**
+     * Error return code.
+     */
+    protected static final int ERROR = 1;
+
+    /**
      * Parse command line arguments
      *
      * @param options pre-defined options
