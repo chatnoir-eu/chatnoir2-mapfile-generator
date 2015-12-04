@@ -169,6 +169,7 @@ public class MapFileGenerator extends Configured implements Tool
         FileInputFormat.setInputPaths(job, inputPath);
         MapFileOutputFormat.setOutputPath(job, new Path(outputPath));
         MapFileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
+        MapFileOutputFormat.setCompressOutput(job, true);
 
         job.waitForCompletion(true);
 
