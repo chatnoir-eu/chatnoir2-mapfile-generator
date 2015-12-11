@@ -42,7 +42,7 @@ public class MapFileBrowser extends MapFileTool
     private static final String[] INPUT_OPTION       = {"input",       "i"};
     private static final String[] PARITIONS_OPTION   = {"partitions",  "k"};
     private static final String[] PREFIX_OPTION      = {"prefix",      "p"};
-    private static final String[] ID_OPTION          = {"name",        "n"};
+    private static final String[] NAME_OPTION        = {"name",        "n"};
     private static final String[] UUID_OPTION        = {"uuid",        "u"};
     private static final String[] RECORD_ONLY_OPTION = {"record-only", "r"};
     private static final String[] VERBOSE_OPTION     = {"verbose",     "v"};
@@ -75,9 +75,9 @@ public class MapFileBrowser extends MapFileTool
         options.addOption(OptionBuilder.
                 withArgName("ID").
                 hasArg().
-                withLongOpt(ID_OPTION[0]).
+                withLongOpt(NAME_OPTION[0]).
                 withDescription("Internal record ID (required if -uuid is not set)").
-                create(ID_OPTION[1]));
+                create(NAME_OPTION[1]));
         options.addOption(OptionBuilder.
                 withArgName("UUID").
                 hasArg().
@@ -100,19 +100,19 @@ public class MapFileBrowser extends MapFileTool
         }
 
         if (!cmdline.hasOption(UUID_OPTION[0]) &&
-                !cmdline.hasOption(PREFIX_OPTION[0]) && !cmdline.hasOption(ID_OPTION[0])) {
+                !cmdline.hasOption(PREFIX_OPTION[0]) && !cmdline.hasOption(NAME_OPTION[0])) {
             System.err.println("You need to specify either -uuid or -prefix and -id.");
             return ERROR;
         }
         if (cmdline.hasOption(UUID_OPTION[0]) &&
-                (cmdline.hasOption(PREFIX_OPTION[0]) || cmdline.hasOption(ID_OPTION[0]))) {
+                (cmdline.hasOption(PREFIX_OPTION[0]) || cmdline.hasOption(NAME_OPTION[0]))) {
             System.err.println("WARNING: -uuid given, ignoring -prefix and -id.");
         }
 
         String inputPathStr           = cmdline.getOptionValue(INPUT_OPTION[0]);
         final int numPartitions       = Integer.parseInt(cmdline.getOptionValue(PARITIONS_OPTION[0]));
         final String uuidPrefix       = cmdline.getOptionValue(PREFIX_OPTION[0]);
-        final String uuidName         = cmdline.getOptionValue(ID_OPTION[0]);
+        final String uuidName         = cmdline.getOptionValue(NAME_OPTION[0]);
         final String uuidStr          = cmdline.hasOption(UUID_OPTION[0]) ? cmdline.getOptionValue(UUID_OPTION[0]) : "";
         final boolean printOnlyRecord = cmdline.hasOption(RECORD_ONLY_OPTION[0]);
         final boolean verbose         = cmdline.hasOption(VERBOSE_OPTION[0]);
