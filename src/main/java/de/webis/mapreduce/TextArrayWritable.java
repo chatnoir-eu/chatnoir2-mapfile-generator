@@ -17,20 +17,37 @@
 
 package de.webis.mapreduce;
 
+import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Partitioner;
+import org.apache.hadoop.io.Writable;
 
 /**
- * Partition UUIDs to reduce tasks in a predictable way.
+ * Wrapper class for ArrayWritable to enable default-construction.
  *
  * @author Janek Bevendorff
- * @version 1
  */
-public class UUIDPartitioner extends Partitioner<Text, Text>
+public class TextArrayWritable extends ArrayWritable
 {
-    @Override
-    public int getPartition(final Text key, final Text value, final int numPartitions)
+    public TextArrayWritable()
     {
-        return (key.toString().hashCode() % numPartitions + numPartitions) % numPartitions;
+        super(Text.class);
+    }
+
+    public TextArrayWritable(final Text[] texts)
+    {
+        super(Text.class, texts);
+    }
+
+    @Override
+    public Text[] get()
+    {
+        final Writable[] writables = super.get();
+        final Text[] texts         = new Text[writables.length];
+
+        for (int i = 0; i < writables.length; ++i) {
+            texts[i] = (Text) writables[i];
+        }
+
+        return texts;
     }
 }

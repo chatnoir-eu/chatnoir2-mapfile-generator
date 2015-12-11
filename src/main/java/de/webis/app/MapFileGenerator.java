@@ -19,19 +19,19 @@ package de.webis.app;
 
 import de.webis.inputformats.ClueWeb09InputFormat;
 import de.webis.inputformats.ClueWeb12InputFormat;
-import de.webis.mapreduce.UUIDPartitioner;
+import de.webis.mapreduce.MapReduceBase;
+import de.webis.mapreduce.WarcUUIDPartitioner;
 import de.webis.mapreduce.WarcMapper;
+import de.webis.mapreduce.WarcReducer;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.GzipCodec;
-import org.apache.hadoop.mapreduce.InputFormat;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.MapFileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.ToolRunner;
 
 import java.util.Arrays;
@@ -41,7 +41,6 @@ import java.util.List;
  * Generic MapFile generator for web corpora.
  *
  * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
- * @version 1
  */
 public class MapFileGenerator extends MapFileTool
 {
@@ -49,34 +48,6 @@ public class MapFileGenerator extends MapFileTool
     private static final String[] INPUT_OPTION        = {"input",  "i"};
     private static final String[] INPUT_FORMAT_OPTION = {"format", "f"};
     private static final String[] OUTPUT_OPTION       = {"output", "o"};
-
-    private static final List<String> SUPPORTED_INPUT_FORMATS = Arrays.asList(
-            "clueweb09",
-            "clueweb12"
-    );
-
-    private static Class<? extends InputFormat> getInputFormatClass(final String format)
-    {
-        switch (format) {
-            case "clueweb09":
-                return ClueWeb09InputFormat.class;
-            case "clueweb12":
-                return ClueWeb12InputFormat.class;
-            default:
-                throw new RuntimeException("Unsupported input format '" + format + "'");
-        }
-    }
-
-    private static Class<? extends Mapper> getMapperClass(final String format)
-    {
-        switch (format) {
-            case "clueweb09":
-            case "clueweb12":
-                return WarcMapper.class;
-            default:
-                throw new RuntimeException("Unsupported input format '" + format + "'");
-        }
-    }
 
     @Override
     @SuppressWarnings("static-access")
@@ -122,12 +93,12 @@ public class MapFileGenerator extends MapFileTool
         final String inputFormat = cmdline.getOptionValue(INPUT_FORMAT_OPTION[0]);
         final String outputPath  = cmdline.getOptionValue(OUTPUT_OPTION[0]);
 
-        if (!SUPPORTED_INPUT_FORMATS.contains(inputFormat)) {
+        if (!MapReduceClassHelper.SUPPORTED_INPUT_FORMATS.contains(inputFormat)) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(this.getClass().getSimpleName(), options);
             ToolRunner.printGenericCommandUsage(System.out);
             System.err.printf("Argument error: Input format '%s' is not supported.\nSupported input formats are: %s\n",
-                    inputFormat, StringUtils.join(SUPPORTED_INPUT_FORMATS, ", "));
+                    inputFormat, StringUtils.join(MapReduceClassHelper.SUPPORTED_INPUT_FORMATS, ", "));
             return ERROR;
         }
 
@@ -143,14 +114,20 @@ public class MapFileGenerator extends MapFileTool
         final Job job = Job.getInstance(conf);
         job.setJobName(String.format("mapfile-generator-%s", inputFormat));
         job.setJarByClass(MapFileGenerator.class);
-        job.setOutputFormatClass(MapFileOutputFormat.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
-        job.setPartitionerClass(UUIDPartitioner.class);
-        job.setInputFormatClass(getInputFormatClass(inputFormat));
-        job.setMapperClass(getMapperClass(inputFormat));
+
+        final MapReduceClassHelper classHelper = new MapReduceClassHelper(inputFormat);
+        job.setInputFormatClass(classHelper.INPUT_FORMAT);
+        job.setMapperClass(classHelper.MAPPER);
+        job.setPartitionerClass(classHelper.PARTITIONER);
+        job.setReducerClass(classHelper.REDUCER);
+
+        LazyOutputFormat.setOutputFormatClass(job, MapFileOutputFormat.class);
+        MultipleOutputs.addNamedOutput(job, MapReduceBase.DATA_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, MapReduceBase.URI_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
 
         FileInputFormat.setInputPaths(job, inputPath);
         MapFileOutputFormat.setOutputPath(job, new Path(outputPath));
@@ -169,5 +146,43 @@ public class MapFileGenerator extends MapFileTool
     {
         LOG.info("Running " + MapFileGenerator.class.getSimpleName() + " with args " + Arrays.toString(args));
         System.exit(ToolRunner.run(new MapFileGenerator(), args));
+    }
+
+
+    /**
+     * Helper class for determining classes of suitable InputFormats, Mappers,
+     * Reducers and Partitioners given a certain input format string.
+     */
+    protected static class MapReduceClassHelper
+    {
+        public static final List<String> SUPPORTED_INPUT_FORMATS = Arrays.asList(
+                "clueweb09",
+                "clueweb12"
+        );
+
+        public final Class<? extends InputFormat> INPUT_FORMAT;
+        public final Class<? extends Mapper>      MAPPER;
+        public final Class<? extends Reducer>     REDUCER;
+        public final Class<? extends Partitioner> PARTITIONER;
+
+        public MapReduceClassHelper(final String inputFormat)
+        {
+            switch (inputFormat) {
+                case "clueweb09":
+                    INPUT_FORMAT = ClueWeb09InputFormat.class;
+                    MAPPER       = WarcMapper.class;
+                    PARTITIONER  = WarcUUIDPartitioner.class;
+                    REDUCER      = WarcReducer.class;
+                    break;
+                case "clueweb12":
+                    INPUT_FORMAT = ClueWeb12InputFormat.class;
+                    MAPPER       = WarcMapper.class;
+                    PARTITIONER  = WarcUUIDPartitioner.class;
+                    REDUCER      = WarcReducer.class;
+                    break;
+                default:
+                    throw new RuntimeException("Unsupported input format '" + inputFormat + "'");
+            }
+        }
     }
 }

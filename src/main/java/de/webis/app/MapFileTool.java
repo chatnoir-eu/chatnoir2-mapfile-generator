@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 
 /**
  * Base class for MapFile generation tools
+ *
+ * @author Janek Bevendorff
  */
 public abstract class MapFileTool extends Configured implements Tool
 {

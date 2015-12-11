@@ -21,20 +21,17 @@ import de.webis.WebisUUID;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Abstract base class for mappers to generate MapFiles.
  *
  * @author Janek Bevendorff
- * @version 1
  */
-public abstract class BaseMapper <K extends Writable, V extends Writable> extends Mapper<K, V, Text, Text>
+public abstract class BaseMapper<K extends Writable, V extends Writable> extends Mapper<K, V, Text, Text> implements MapReduceBase
 {
-    protected static final Logger LOG = Logger.getLogger(BaseMapper.class);
-
     private String mUUIDPrefix = "";
     private WebisUUID mUUIDGenerator;
 
@@ -43,7 +40,7 @@ public abstract class BaseMapper <K extends Writable, V extends Writable> extend
         return mUUIDPrefix;
     }
 
-    protected String generateUUID(final String internalId)
+    protected UUID generateUUID(final String internalId)
     {
         return mUUIDGenerator.generateUUID(internalId);
     }

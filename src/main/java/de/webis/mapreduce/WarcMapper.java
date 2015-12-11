@@ -23,32 +23,33 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * MapReduce Mapper class for WARC records.
  *
  * @author Janek Bevendorff
- * @version 1
  */
-public class WarcMapper extends BaseMapper<LongWritable, WarcRecord> implements WarcMapReduceBase
+public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
 {
-    protected static Counter recordsCounter;
-    protected static Counter nullIdCounter;
-    protected static Counter generatedCounter;
+    protected static Counter mRecordsCounter;
+    protected static Counter mNullIdCounter;
+    protected static Counter mGeneratedCounter;
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException
     {
         super.setup(context);
-        recordsCounter   = context.getCounter(RecordCounters.RECORDS);
-        nullIdCounter    = context.getCounter(RecordCounters.SKIPPED_RECORDS_NULL_ID);
-        generatedCounter = context.getCounter(RecordCounters.GENERATED_DOCS);
+        mRecordsCounter   = context.getCounter(RecordCounters.RECORDS);
+        mNullIdCounter    = context.getCounter(RecordCounters.SKIPPED_RECORDS_NULL_ID);
+        mGeneratedCounter = context.getCounter(RecordCounters.GENERATED_DOCS);
     }
 
     @Override
     public void map(final LongWritable key, final WarcRecord value, final Context context) throws IOException, InterruptedException
     {
-        recordsCounter.increment(1);
+        mRecordsCounter.increment(1);
+        OUTPUT_URI.clear();
         OUTPUT_KEY.clear();
         OUTPUT_DOC.clear();
 
@@ -56,7 +57,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord> implements 
 
         if (null == docId) {
             LOG.info(String.format("Skipped document #%d with null ID", key.get()));
-            nullIdCounter.increment(1);
+            mNullIdCounter.increment(1);
             return;
         }
 
@@ -64,17 +65,25 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord> implements 
 
         // WARC headers
         final JSONObject outputJsonDoc = new JSONObject();
-        outputJsonDoc.put("metadata", value.getHeader().getHeaderMetadata());
+        final HashMap<String, String> warcHeaders = value.getHeader().getHeaderMetadata();
+        outputJsonDoc.put(JSON_METADATA_KEY, warcHeaders);
 
         // content headers and body
         final JSONObject payloadJson = new JSONObject();
-        payloadJson.put("headers", value.getContentHeaders());
-        payloadJson.put("body", value.getContent());
-        outputJsonDoc.put("payload", payloadJson);
+        payloadJson.put(JSON_HEADERS_KEY, value.getContentHeaders());
+        payloadJson.put(JSON_BODY_KEY, value.getContent());
+        outputJsonDoc.put(JSON_PAYLOAD_KEY, payloadJson);
 
-        OUTPUT_KEY.set(generateUUID(docId));
+        OUTPUT_KEY.set(DATA_OUTPUT_NAME + generateUUID(docId).toString());
         OUTPUT_DOC.set(outputJsonDoc.toString());
         context.write(OUTPUT_KEY, OUTPUT_DOC);
-        generatedCounter.increment(1);
+
+        final String uri = warcHeaders.get("WARC-Target-URI");
+        if (null != uri) {
+            OUTPUT_URI.set(URI_OUTPUT_NAME + uri);
+            context.write(OUTPUT_URI, OUTPUT_KEY);
+        }
+
+        mGeneratedCounter.increment(1);
     }
 }

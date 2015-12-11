@@ -31,7 +31,6 @@ import java.util.Arrays;
  * MapFile merger.
  *
  * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
- * @version 1
  */
 public class MapFileMerger extends MapFileTool
 {

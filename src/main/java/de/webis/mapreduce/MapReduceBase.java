@@ -18,17 +18,28 @@
 package de.webis.mapreduce;
 
 import org.apache.hadoop.io.*;
+import org.apache.log4j.Logger;
 
 /**
  * Base interface for ClueWeb mappers and reducers.
  *
  * @author Janek Bevendorff
- * @version 1
  */
-public interface WarcMapReduceBase
+public interface MapReduceBase
 {
+    Text OUTPUT_URI = new Text();
     Text OUTPUT_KEY = new Text();
     Text OUTPUT_DOC = new Text();
+
+    String JSON_METADATA_KEY = "metadata";
+    String JSON_PAYLOAD_KEY  = "payload";
+    String JSON_HEADERS_KEY  = "headers";
+    String JSON_BODY_KEY     = "body";
+
+    String DATA_OUTPUT_NAME = "data";
+    String URI_OUTPUT_NAME  = "uri";
+
+    Logger LOG = Logger.getLogger(BaseMapper.class);
 
     /**
      * MapReduce counters.
@@ -58,5 +69,15 @@ public interface WarcMapReduceBase
          * Number of actual JSON docs generated.
          */
         GENERATED_DOCS,
+
+        /**
+         * Number of MapFile data entries generated.
+         */
+        MAPFILE_DATA_ENTRIES,
+
+        /**
+         * Number of MapFile URI entries generated.
+         */
+        MAPFILE_URI_ENTRIES
     }
 }
