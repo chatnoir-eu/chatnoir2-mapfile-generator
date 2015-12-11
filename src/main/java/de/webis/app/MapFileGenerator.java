@@ -19,7 +19,8 @@ package de.webis.app;
 
 import de.webis.inputformats.ClueWeb09InputFormat;
 import de.webis.inputformats.ClueWeb12InputFormat;
-import de.webis.mapper.WarcMapper;
+import de.webis.mapreduce.UUIDPartitioner;
+import de.webis.mapreduce.WarcMapper;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -147,6 +148,7 @@ public class MapFileGenerator extends MapFileTool
         job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
+        job.setPartitionerClass(UUIDPartitioner.class);
         job.setInputFormatClass(getInputFormatClass(inputFormat));
         job.setMapperClass(getMapperClass(inputFormat));
 
