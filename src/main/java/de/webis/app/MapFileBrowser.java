@@ -40,9 +40,9 @@ import java.util.UUID;
 public class MapFileBrowser extends MapFileTool
 {
     private static final String[] INPUT_OPTION       = {"input",       "i"};
-    private static final String[] PARITIONS_OPTION   = {"partitions",  "n"};
+    private static final String[] PARITIONS_OPTION   = {"partitions",  "k"};
     private static final String[] PREFIX_OPTION      = {"prefix",      "p"};
-    private static final String[] ID_OPTION          = {"id",          "k"};
+    private static final String[] ID_OPTION          = {"name",        "n"};
     private static final String[] UUID_OPTION        = {"uuid",        "u"};
     private static final String[] RECORD_ONLY_OPTION = {"record-only", "r"};
     private static final String[] VERBOSE_OPTION     = {"verbose",     "v"};
