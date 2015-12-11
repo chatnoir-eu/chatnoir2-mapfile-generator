@@ -26,10 +26,11 @@ import org.apache.hadoop.mapreduce.Partitioner;
  * @author Janek Bevendorff
  * @version 1
  */
-public class UUIDPartitioner extends Partitioner<Text, Text> {
-
+public class UUIDPartitioner extends Partitioner<Text, Text>
+{
     @Override
-    public int getPartition(final Text key, final Text value, final int numPartitions) {
+    public int getPartition(final Text key, final Text value, final int numPartitions)
+    {
         return key.toString().hashCode() % numPartitions;
     }
 }
