@@ -31,6 +31,6 @@ public class UUIDPartitioner extends Partitioner<Text, Text>
     @Override
     public int getPartition(final Text key, final Text value, final int numPartitions)
     {
-        return Math.abs(key.toString().hashCode() % numPartitions);
+        return (key.toString().hashCode() % numPartitions + numPartitions) % numPartitions;
     }
 }
