@@ -376,11 +376,18 @@ public class WarcRecord implements Writable
                 continue;
             }
 
+            String key   = pieces[0].trim();
+            String value = "";
             if (2 != pieces.length) {
-                headers.put(pieces[0].trim(), "");
-                continue;
+                if (key.startsWith("HTTP/1.")) {
+                    value = key;
+                    key   = "__HTTP_STATUS__";
+                }
+            } else {
+                value = pieces[1].trim();
             }
-            headers.put(pieces[0].trim(), pieces[1].trim());
+
+            headers.put(key, value);
         }
 
         return headers;
