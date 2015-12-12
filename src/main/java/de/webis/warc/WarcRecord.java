@@ -29,7 +29,8 @@ import java.util.HashMap;
  */
 public class WarcRecord implements Writable
 {
-    private static String NEWLINE = "\n";
+    private static String NEWLINE_LF   = "\n";
+    private static String NEWLINE_CRLF = "\r\n";
 
     private final WarcHeader mWarcHeader;
     private byte[] mWarcContent = null;
@@ -163,13 +164,11 @@ public class WarcRecord implements Writable
         // then read to the first newline
         // make sure we get the content length here
         int contentLength = -1;
-        boolean foundContentLength = false;
-        while (!foundContentLength && ((line = readLineFromInputStream(in)) != null) && line.trim().length() != 0) {
+        while ((line = readLineFromInputStream(in)) != null && line.trim().length() != 0) {
             headerBuffer.append(line);
-            headerBuffer.append(NEWLINE);
+            headerBuffer.append(NEWLINE_LF);
             String[] thisHeaderPieceParts = line.split(":", 2);
             if (thisHeaderPieceParts[0].toLowerCase().trim().equals("content-length")) {
-                foundContentLength = true;
                 try {
                     if (2 == thisHeaderPieceParts.length) {
                         contentLength = Integer.parseInt(thisHeaderPieceParts[1].trim());
@@ -214,6 +213,51 @@ public class WarcRecord implements Writable
     }
 
     /**
+     * Helper method for cutting body block from WARC payload.
+     * Get start position of content block after first occurrence of a double-newline delimiter.
+     *
+     * @param str the String to examine
+     * @return start position of content block, -1 if none was found
+     */
+    private int getDoubleNewlineContentPos(final String str)
+    {
+        int iLf   = str.indexOf(NEWLINE_LF + NEWLINE_LF);
+        int iCrLf = str.indexOf(NEWLINE_CRLF + NEWLINE_CRLF);
+
+        int pos;
+        if ((iLf < iCrLf && -1 != iLf) || -1 == iCrLf) {
+            pos = -1 != iLf ? iLf + NEWLINE_LF.length() * 2 : -1;
+        } else {
+            pos = iCrLf + NEWLINE_CRLF.length() * 2;
+        }
+
+        return pos;
+    }
+
+    /**
+     * Helper method for cutting header block from WARC payload.
+     * Get position of first occurrence of a double-newline delimiter.
+     * The header block is everything up to that position.
+     *
+     * @param str the String to examine
+     * @return start position of double-newline delimiter, -1 if none was found
+     */
+    private int getDoubleNewlineHeaderEndPos(final String str)
+    {
+        int iLf   = str.indexOf(NEWLINE_LF + NEWLINE_LF);
+        int iCrLf = str.indexOf(NEWLINE_CRLF + NEWLINE_CRLF);
+
+        int pos;
+        if ((iLf < iCrLf && -1 != iLf) || -1 == iCrLf) {
+            pos = iLf;
+        } else {
+            pos = iCrLf;
+        }
+
+        return pos;
+    }
+
+    /**
      * Read in a WARC record from a data input stream.
      *
      * @param in the input stream
@@ -232,7 +276,7 @@ public class WarcRecord implements Writable
 
         // extract out our header information
         final String thisHeaderString = recordHeader.toString();
-        final String[] headerLines = thisHeaderString.split(NEWLINE);
+        final String[] headerLines = thisHeaderString.split(NEWLINE_LF);
 
         final WarcRecord retRecord = new WarcRecord(new WarcHeader(warcVersion));
         retRecord.mWarcHeader.setContentLength(recordContent.length);
@@ -341,9 +385,9 @@ public class WarcRecord implements Writable
     public String getContent()
     {
         final String str = getFullContentString();
-        int i = str.indexOf(NEWLINE + NEWLINE);
+        int i = getDoubleNewlineContentPos(str);
 
-        return (-1 != i) ? str.substring(i + 1) : "";
+        return (-1 != i) ? str.substring(i) : "";
     }
 
     /**
@@ -354,7 +398,7 @@ public class WarcRecord implements Writable
     public String getContentHeaderString()
     {
         final String str = getFullContentString();
-        int i = str.indexOf(NEWLINE + NEWLINE);
+        int i = getDoubleNewlineHeaderEndPos(str);
 
         return (-1 != i) ? str.substring(0, i) : "";
     }
@@ -367,7 +411,7 @@ public class WarcRecord implements Writable
     public HashMap<String, String> getContentHeaders()
     {
         final String headerString  = getContentHeaderString();
-        final String[] headerLines = headerString.split(NEWLINE);
+        final String[] headerLines = headerString.split(NEWLINE_LF);
 
         final HashMap<String, String> headers = new HashMap<>();
         for (final String headerLine : headerLines) {

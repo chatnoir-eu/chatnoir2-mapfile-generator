@@ -46,7 +46,7 @@ public class WarcHeader implements Writable
     private static String NEWLINE = "\n";
 
     private final WarcVersion mVersion;
-    private int mContentLength;
+    private int mContentLength = 0;
     private final HashMap<String, String> mMetadata = new HashMap<>();
 
     public WarcHeader(final WarcVersion version)
