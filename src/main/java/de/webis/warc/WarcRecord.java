@@ -446,7 +446,7 @@ public class WarcRecord implements Writable
     /**
      * Determine encoding of raw byte content.
      *
-     * @return Encoding String identifier (e.g. UTF-8, ISO-8869-1, ...), null if unknown/binary content
+     * @return Encoding String identifier (e.g. UTF-8, ISO-8859-1, ...), null if unknown/binary content
      */
     public String getContentEncoding()
     {
