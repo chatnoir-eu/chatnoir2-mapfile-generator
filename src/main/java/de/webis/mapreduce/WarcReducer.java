@@ -70,7 +70,7 @@ public class WarcReducer extends Reducer<Text, Text, Text, Text> implements MapR
             mMultipleOutputs.write(URI_OUTPUT_NAME, key, data);
             mMapFileURICounter.increment(1);
         } else {
-            LOG.error("Key '" + strKey + "' doesn't start with know prefix!");
+            LOG.error("Key '" + strKey + "' doesn't start with known prefix!");
         }
     }
 
