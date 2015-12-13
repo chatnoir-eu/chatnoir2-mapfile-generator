@@ -19,6 +19,7 @@ package de.webis.app;
 
 import de.webis.inputformats.ClueWeb09InputFormat;
 import de.webis.inputformats.ClueWeb12InputFormat;
+import de.webis.inputformats.CommonCrawlInputFormat;
 import de.webis.mapreduce.MapReduceBase;
 import de.webis.mapreduce.WarcUUIDPartitioner;
 import de.webis.mapreduce.WarcMapper;
@@ -157,7 +158,8 @@ public class MapFileGenerator extends MapFileTool
     {
         public static final List<String> SUPPORTED_INPUT_FORMATS = Arrays.asList(
                 "clueweb09",
-                "clueweb12"
+                "clueweb12",
+                "commoncrawl"
         );
 
         public final Class<? extends InputFormat> INPUT_FORMAT;
@@ -176,6 +178,12 @@ public class MapFileGenerator extends MapFileTool
                     break;
                 case "clueweb12":
                     INPUT_FORMAT = ClueWeb12InputFormat.class;
+                    MAPPER       = WarcMapper.class;
+                    PARTITIONER  = WarcUUIDPartitioner.class;
+                    REDUCER      = WarcReducer.class;
+                    break;
+                case "commoncrawl":
+                    INPUT_FORMAT = CommonCrawlInputFormat.class;
                     MAPPER       = WarcMapper.class;
                     PARTITIONER  = WarcUUIDPartitioner.class;
                     REDUCER      = WarcReducer.class;

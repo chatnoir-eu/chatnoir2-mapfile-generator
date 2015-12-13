@@ -52,9 +52,9 @@ public interface MapReduceBase
         RECORDS,
 
         /**
-         * Number of skipped records due to null ID.
+         * Number of skipped records that are not of type "response".
          */
-        SKIPPED_RECORDS_NULL_ID,
+        SKIPPED_NON_RESPONSE_RECORD,
 
         /**
          * Number of skipped records that are too large.
@@ -65,6 +65,11 @@ public interface MapReduceBase
          * Number of skipped records that are too small.
          */
         SKIPPED_RECORDS_TOO_SMALL,
+
+        /**
+         * Number of binary records.
+         */
+        BINARY_RECORDS,
 
         /**
          * Number of actual JSON docs generated.

@@ -33,16 +33,18 @@ import java.util.TreeMap;
 public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
 {
     protected static Counter mRecordsCounter;
-    protected static Counter mNullIdCounter;
+    protected static Counter mNonResponseRecordCounter;
     protected static Counter mGeneratedCounter;
+    protected static Counter mBinaryRecordCounter;
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException
     {
         super.setup(context);
-        mRecordsCounter   = context.getCounter(RecordCounters.RECORDS);
-        mNullIdCounter    = context.getCounter(RecordCounters.SKIPPED_RECORDS_NULL_ID);
-        mGeneratedCounter = context.getCounter(RecordCounters.GENERATED_DOCS);
+        mRecordsCounter           = context.getCounter(RecordCounters.RECORDS);
+        mNonResponseRecordCounter = context.getCounter(RecordCounters.SKIPPED_NON_RESPONSE_RECORD);
+        mGeneratedCounter         = context.getCounter(RecordCounters.GENERATED_DOCS);
+        mBinaryRecordCounter      = context.getCounter(RecordCounters.BINARY_RECORDS);
     }
 
     @Override
@@ -55,9 +57,9 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
 
         final String docId = value.getDocId();
 
-        if (null == docId) {
-            LOG.info(String.format("Skipped document #%d with null ID", key.get()));
-            mNullIdCounter.increment(1);
+        if (!value.getRecordType().equals("response")) {
+            LOG.info("Skipped non-response WARC record");
+            mNonResponseRecordCounter.increment(1);
             return;
         }
 
@@ -68,11 +70,16 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         final TreeMap<String, String> warcHeaders = value.getHeader().getHeaderMetadata();
         outputJsonDoc.put(JSON_METADATA_KEY, warcHeaders);
 
+        final String recordEncoding = value.getContentEncoding();
+        if (null == recordEncoding) {
+            mBinaryRecordCounter.increment(1);
+        }
+
         // content headers and body
         final JSONObject payloadJson = new JSONObject();
         payloadJson.put(JSON_HEADERS_KEY, value.getContentHeaders());
         payloadJson.put(JSON_BODY_KEY, value.getContent());
-        payloadJson.put(JSON_PAYLOAD_ENCODING, null != value.getContentEncoding() ? "plain" : "base64");
+        payloadJson.put(JSON_PAYLOAD_ENCODING, null != recordEncoding ? "plain" : "base64");
         outputJsonDoc.put(JSON_PAYLOAD_KEY, payloadJson);
 
         OUTPUT_KEY.set(DATA_OUTPUT_NAME + generateUUID(docId).toString());

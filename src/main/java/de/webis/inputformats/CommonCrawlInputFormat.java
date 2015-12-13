@@ -20,12 +20,12 @@ package de.webis.inputformats;
 import de.webis.warc.WarcHeader;
 
 /**
- * Input format class for ClueWeb09 WARC records
+ * Input format class for CommonCrawl WARC records
  */
-public class ClueWeb09InputFormat extends WarcInputFormat
+public class CommonCrawlInputFormat extends WarcInputFormat
 {
-    public ClueWeb09InputFormat()
+    public CommonCrawlInputFormat()
     {
-        super(WarcHeader.WarcVersion.WARC018, "WARC-TREC-ID");
+        super(WarcHeader.WarcVersion.WARC10);
     }
 }

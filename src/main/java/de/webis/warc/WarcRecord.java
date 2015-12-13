@@ -22,6 +22,7 @@ import org.apache.xerces.impl.dv.util.Base64;
 
 import java.io.*;
 import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * Generic WARC record parser class.
@@ -37,8 +38,16 @@ public class WarcRecord implements Writable
     private byte[] mBodyContent = null;
     private TreeMap<String, String> mHttpHeaderCache = null;
 
+    /**
+     * Sets the record ID field from the WARC header.
+     */
+    private String mRecordIdField = "WARC-Record-ID";
+
     protected WarcRecord(final WarcHeader header)
     {
+        if (null == header)
+            throw new IllegalArgumentException("WARC header cannot be null!");
+
         mWarcHeader = header;
     }
 
@@ -292,13 +301,39 @@ public class WarcRecord implements Writable
     }
 
     /**
-     * Get record TREC ID.
+     * Get record ID.
+     * If no other field has been specified using {@link #setRecordIdField(String)},
+     * the Warc-Record-ID header will be used by default. If that header
+     * does not exist, a random UUID is generated and returned as a URN in the
+     * form &lt;urn:uuid:RANDOM_UUID&gt;.
      *
-     * @return WARC TREC ID (may be null if record is not a valid WARC document)
+     * @return record id
      */
     public String getDocId()
     {
-        return mWarcHeader.getHeaderMetadata().get("WARC-TREC-ID");
+        final String id = mWarcHeader.getHeaderMetadataItem(mRecordIdField);
+        return null != id ? id : "<urn:uuid:" + UUID.randomUUID() + ">";
+    }
+
+    /**
+     * Change the record ID header field. The default is "WARC-Record-ID".
+     *
+     * @param idField new field name, null to reset to default
+     */
+    public void setRecordIdField(final String idField)
+    {
+        mRecordIdField = null != idField ? idField : "WARC-Record-ID";
+    }
+
+    /**
+     * Get type of WARC record.
+     * Normal WARC records will return "response", WARC info records will return "warcinfo".
+     *
+     * @return WARC record type, null if unknown
+     */
+    public String getRecordType()
+    {
+        return mWarcHeader.getHeaderMetadataItem("Warc-Type");
     }
 
     /**
@@ -356,7 +391,7 @@ public class WarcRecord implements Writable
     }
 
     /**
-     * Get raw byte content of this record.
+     * Get raw byte content of this record (body part only).
      */
     public byte[] getByteContent()
     {
@@ -364,7 +399,7 @@ public class WarcRecord implements Writable
     }
 
     /**
-     * Get body part of content.
+     * Get body part of content as String.
      *
      * @return UTF-8-encoded String body part of content, base64-encoded String if content is binary
      *         (check with {@link #getContentEncoding()}

@@ -39,20 +39,38 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
-public abstract class ClueWebInputFormat extends FileInputFormat<LongWritable, WarcRecord>
+public abstract class WarcInputFormat extends FileInputFormat<LongWritable, WarcRecord>
 {
     private final WarcHeader.WarcVersion mWarcVersion;
+    private String mWarcRecordIdField = null;
 
-    public ClueWebInputFormat(final WarcHeader.WarcVersion warcVersion)
+    /**
+     * Constructor.
+     *
+     * @param warcVersion version number of the WARC file to read
+     */
+    public WarcInputFormat(final WarcHeader.WarcVersion warcVersion)
     {
         mWarcVersion = warcVersion;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param warcVersion version number of the WARC file to read
+     * @param warcRecordIdField Custom record ID header field
+     */
+    public WarcInputFormat(final WarcHeader.WarcVersion warcVersion, final String warcRecordIdField)
+    {
+        this(warcVersion);
+        mWarcRecordIdField = warcRecordIdField;
     }
 
     @Override
     public RecordReader<LongWritable, WarcRecord> createRecordReader(InputSplit split, TaskAttemptContext context)
             throws IOException, InterruptedException
     {
-        return new ClueWarcRecordReader();
+        return new WarcRecordReader();
     }
 
     @Override
@@ -61,7 +79,7 @@ public abstract class ClueWebInputFormat extends FileInputFormat<LongWritable, W
         return false;
     }
 
-    public class ClueWarcRecordReader extends RecordReader<LongWritable, WarcRecord>
+    public class WarcRecordReader extends RecordReader<LongWritable, WarcRecord>
     {
         private CompressionCodecFactory compressionCodecs = null;
         private long start;
@@ -123,6 +141,9 @@ public abstract class ClueWebInputFormat extends FileInputFormat<LongWritable, W
             }
             key.set(pos);
             value = WarcRecord.readNextWarcRecord(in, mWarcVersion);
+            if (null != mWarcRecordIdField && null != value) {
+                value.setRecordIdField(mWarcRecordIdField);
+            }
             return value != null;
         }
 
