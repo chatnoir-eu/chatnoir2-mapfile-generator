@@ -215,51 +215,6 @@ public class WarcRecord implements Writable
     }
 
     /**
-     * Helper method for cutting body block from WARC payload.
-     * Get start position of content block after first occurrence of a double-newline delimiter.
-     *
-     * @param str the String to examine
-     * @return start position of content block, -1 if none was found
-     */
-//    private int getDoubleNewlineContentPos(final String str)
-//    {
-//        int iLf   = str.indexOf(NEWLINE_LF + NEWLINE_LF);
-//        int iCrLf = str.indexOf(NEWLINE + NEWLINE);
-//
-//        int pos;
-//        if ((iLf < iCrLf && -1 != iLf) || -1 == iCrLf) {
-//            pos = -1 != iLf ? iLf + NEWLINE_LF.length() * 2 : -1;
-//        } else {
-//            pos = iCrLf + NEWLINE.length() * 2;
-//        }
-//
-//        return pos;
-//    }
-
-    /**
-     * Helper method for cutting header block from WARC payload.
-     * Get position of first occurrence of a double-newline delimiter.
-     * The header block is everything up to that position.
-     *
-     * @param str the String to examine
-     * @return start position of double-newline delimiter, -1 if none was found
-     */
-//    private int getDoubleNewlineHeaderEndPos(final String str)
-//    {
-//        int iLf   = str.indexOf(NEWLINE_LF + NEWLINE_LF);
-//        int iCrLf = str.indexOf(NEWLINE + NEWLINE);
-//
-//        int pos;
-//        if ((iLf < iCrLf && -1 != iLf) || -1 == iCrLf) {
-//            pos = iLf;
-//        } else {
-//            pos = iCrLf;
-//        }
-//
-//        return pos;
-//    }
-
-    /**
      * Read in a WARC record from a data input stream.
      *
      * @param in the input stream
