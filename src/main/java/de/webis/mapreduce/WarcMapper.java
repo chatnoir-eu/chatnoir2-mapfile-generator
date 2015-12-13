@@ -55,7 +55,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         OUTPUT_KEY.clear();
         OUTPUT_DOC.clear();
 
-        final String docId = value.getDocId();
+        final String docId = value.getRecordId();
 
         if (!value.getRecordType().equals("response")) {
             LOG.info("Skipped non-response WARC record");

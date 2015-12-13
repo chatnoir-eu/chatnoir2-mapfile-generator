@@ -309,7 +309,7 @@ public class WarcRecord implements Writable
      *
      * @return record id
      */
-    public String getDocId()
+    public String getRecordId()
     {
         final String id = mWarcHeader.getHeaderMetadataItem(mRecordIdField);
         return null != id ? id : "<urn:uuid:" + UUID.randomUUID() + ">";
