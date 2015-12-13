@@ -31,10 +31,11 @@ public interface MapReduceBase
     Text OUTPUT_KEY = new Text();
     Text OUTPUT_DOC = new Text();
 
-    String JSON_METADATA_KEY = "metadata";
-    String JSON_PAYLOAD_KEY  = "payload";
-    String JSON_HEADERS_KEY  = "headers";
-    String JSON_BODY_KEY     = "body";
+    String JSON_METADATA_KEY     = "metadata";
+    String JSON_PAYLOAD_KEY      = "payload";
+    String JSON_PAYLOAD_ENCODING = "encoding";
+    String JSON_HEADERS_KEY      = "headers";
+    String JSON_BODY_KEY         = "body";
 
     String DATA_OUTPUT_NAME = "data";
     String URI_OUTPUT_NAME  = "uri";
