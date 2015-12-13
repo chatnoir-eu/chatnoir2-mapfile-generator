@@ -311,7 +311,6 @@ public class WarcRecord implements Writable
      */
     public void setContent(final byte[] c)
     {
-
         final String warcContentType = mWarcHeader.getHeaderMetadata().get("Content-Type");
         if (null != warcContentType) {
             String[] parts = warcContentType.split(";");
