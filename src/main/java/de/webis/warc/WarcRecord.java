@@ -413,7 +413,7 @@ public class WarcRecord implements Writable
         if (null == mHttpHeaderCache) {
             mHttpHeaderCache           = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             final String headerString  = getContentHeaderString();
-            final String[] headerLines = headerString.split("\n|\r\n");
+            final String[] headerLines = headerString.split("\\r?\\n");
 
             for (final String headerLine : headerLines) {
                 String[] pieces = headerLine.split(":", 2);
