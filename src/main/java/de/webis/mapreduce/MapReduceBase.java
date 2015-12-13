@@ -54,7 +54,7 @@ public interface MapReduceBase
         /**
          * Number of skipped records that are not of type "response".
          */
-        SKIPPED_NON_RESPONSE_RECORD,
+        SKIPPED_RECORDS,
 
         /**
          * Number of skipped records that are too large.

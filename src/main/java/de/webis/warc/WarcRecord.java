@@ -326,8 +326,9 @@ public class WarcRecord implements Writable
     }
 
     /**
-     * Get type of WARC record.
-     * Normal WARC records will return "response", WARC info records will return "warcinfo".
+     * Get type of WARC record, i.e. the value of WARC-Type.
+     * Allowed values according to the specification are 'warcinfo', 'response', 'resource',
+     * 'request', 'metadata', 'revisit', 'conversion', and 'continuation'.
      *
      * @return WARC record type, null if unknown
      */

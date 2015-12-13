@@ -33,7 +33,7 @@ import java.util.TreeMap;
 public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
 {
     protected static Counter mRecordsCounter;
-    protected static Counter mNonResponseRecordCounter;
+    protected static Counter mSkippedRecordCounter;
     protected static Counter mGeneratedCounter;
     protected static Counter mBinaryRecordCounter;
 
@@ -41,10 +41,10 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
     protected void setup(final Context context) throws IOException, InterruptedException
     {
         super.setup(context);
-        mRecordsCounter           = context.getCounter(RecordCounters.RECORDS);
-        mNonResponseRecordCounter = context.getCounter(RecordCounters.SKIPPED_NON_RESPONSE_RECORD);
-        mGeneratedCounter         = context.getCounter(RecordCounters.GENERATED_DOCS);
-        mBinaryRecordCounter      = context.getCounter(RecordCounters.BINARY_RECORDS);
+        mRecordsCounter       = context.getCounter(RecordCounters.RECORDS);
+        mSkippedRecordCounter = context.getCounter(RecordCounters.SKIPPED_RECORDS);
+        mGeneratedCounter     = context.getCounter(RecordCounters.GENERATED_DOCS);
+        mBinaryRecordCounter  = context.getCounter(RecordCounters.BINARY_RECORDS);
     }
 
     @Override
@@ -58,8 +58,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         final String docId = value.getRecordId();
 
         if (!value.getRecordType().equals("response")) {
-            LOG.info("Skipped non-response WARC record");
-            mNonResponseRecordCounter.increment(1);
+            mSkippedRecordCounter.increment(1);
             return;
         }
 
