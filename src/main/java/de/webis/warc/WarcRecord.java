@@ -473,9 +473,9 @@ public class WarcRecord implements Writable
         }
         if (5 <= mBodyContent.length &&
                 ((mBodyContent[0] == (byte) 0x00 && mBodyContent[1] == (byte) 0x00 &&
-                        mBodyContent[1] == (byte) 0xfe  && mBodyContent[1] == (byte) 0xff) ||
+                        mBodyContent[2] == (byte) 0xfe  && mBodyContent[3] == (byte) 0xff) ||
                         (mBodyContent[0] == (byte) 0xff && mBodyContent[1] == (byte) 0xfe &&
-                                mBodyContent[1] == (byte) 0x00  && mBodyContent[1] == (byte) 0x00))) {
+                                mBodyContent[2] == (byte) 0x00  && mBodyContent[3] == (byte) 0x00))) {
             return "UTF-32";
         }
 
