@@ -55,14 +55,15 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         OUTPUT_KEY.clear();
         OUTPUT_DOC.clear();
 
-        final String docId = value.getRecordId();
+        final String recordId = value.getRecordId();
 
-        if (!value.getRecordType().equals("response")) {
+        if (!value.getRecordType().equals("response") && !value.getRecordType().equals("request")) {
+            LOG.debug(String.format("Skipped record %s of type %s", recordId, value.getRecordType()));
             mSkippedRecordCounter.increment(1);
             return;
         }
 
-        LOG.debug(String.format("Mapping document %s", docId));
+        LOG.debug(String.format("Mapping document %s", recordId));
 
         // WARC headers
         final JSONObject outputJsonDoc = new JSONObject();
@@ -81,7 +82,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         payloadJson.put(JSON_PAYLOAD_ENCODING, null != recordEncoding ? "plain" : "base64");
         outputJsonDoc.put(JSON_PAYLOAD_KEY, payloadJson);
 
-        OUTPUT_KEY.set(DATA_OUTPUT_NAME + generateUUID(docId).toString());
+        OUTPUT_KEY.set(DATA_OUTPUT_NAME + generateUUID(recordId).toString());
         OUTPUT_DOC.set(outputJsonDoc.toString());
         context.write(OUTPUT_KEY, OUTPUT_DOC);
 
