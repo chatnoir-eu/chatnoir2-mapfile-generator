@@ -348,7 +348,7 @@ public class WarcRecord implements Writable
         if (null != warcContentType) {
             String[] parts = warcContentType.split(";");
             if (parts.length < 2 || !parts[0].trim().equals("application/http") || !parts[1].trim().equals("msgtype=response")) {
-                // don't try to split off headers if this is no HTTP record
+                // don't try to split off headers if this is no HTTP response record
                 mBodyContent = c;
             } else {
                 int headerEnd = 0;
