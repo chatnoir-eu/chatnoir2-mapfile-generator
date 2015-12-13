@@ -486,6 +486,11 @@ public class WarcRecord implements Writable
             return null;
         }
 
+        final String warcType = mWarcHeader.getHeaderMetadataItem("WARC-Type");
+        if (null != warcType && warcType.equals("request")) {
+            return "US-ASCII";
+        }
+
         final String contentType = getContentHeaders().get("Content-Type");
         if (null != contentType) {
             final String[] parts = contentType.split(";");
