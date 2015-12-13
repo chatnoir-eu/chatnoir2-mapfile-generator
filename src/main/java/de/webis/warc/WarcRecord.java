@@ -333,7 +333,7 @@ public class WarcRecord implements Writable
      */
     public String getRecordType()
     {
-        return mWarcHeader.getHeaderMetadataItem("Warc-Type");
+        return mWarcHeader.getHeaderMetadataItem("WARC-Type");
     }
 
     /**
