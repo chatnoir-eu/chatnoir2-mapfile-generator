@@ -466,12 +466,12 @@ public class WarcRecord implements Writable
                 mBodyContent[0] == (byte) 0xef && mBodyContent[1] == (byte) 0xbb && mBodyContent[2] == (byte) 0xbf) {
             return "UTF-8";
         }
-        if (3 <= mBodyContent.length &&
+        if (4 <= mBodyContent.length &&
                 ((mBodyContent[0] == (byte) 0xfe && mBodyContent[1] == (byte) 0xff) ||
                         (mBodyContent[0] == (byte) 0xff && mBodyContent[1] == (byte) 0xfe))) {
             return "UTF-16";
         }
-        if (5 <= mBodyContent.length &&
+        if (8 <= mBodyContent.length &&
                 ((mBodyContent[0] == (byte) 0x00 && mBodyContent[1] == (byte) 0x00 &&
                         mBodyContent[2] == (byte) 0xfe  && mBodyContent[3] == (byte) 0xff) ||
                         (mBodyContent[0] == (byte) 0xff && mBodyContent[1] == (byte) 0xfe &&
