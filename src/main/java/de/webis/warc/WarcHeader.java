@@ -22,11 +22,13 @@ import org.apache.hadoop.io.Writable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * WARC header class.
+ *
+ * @author Janek Bevendorff
  */
 public class WarcHeader implements Writable
 {
@@ -43,11 +45,11 @@ public class WarcHeader implements Writable
         }
     }
 
-    private static String NEWLINE = "\n";
+    private static final String NEWLINE = "\r\n";
 
     private final WarcVersion mVersion;
     private int mContentLength = 0;
-    private final HashMap<String, String> mMetadata = new HashMap<>();
+    private final TreeMap<String, String> mMetadata = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public WarcHeader(final WarcVersion version)
     {
@@ -140,9 +142,11 @@ public class WarcHeader implements Writable
     }
 
     /**
-     * Get Entry Set of all metadata from header.
+     * Get WARC headers as case-insensitive TreeMap.
+     *
+     * @return Headers as Key->Value TreeMap
      */
-    public HashMap<String, String> getHeaderMetadata()
+    public TreeMap<String, String> getHeaderMetadata()
     {
         return mMetadata;
     }
@@ -151,6 +155,7 @@ public class WarcHeader implements Writable
      * Get a specific Entry from header metadata.
      *
      * @param key the item
+     * @return header value
      */
     public String getHeaderMetadataItem(final String key) {
         return mMetadata.get(key);

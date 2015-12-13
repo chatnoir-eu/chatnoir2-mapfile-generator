@@ -23,7 +23,7 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * MapReduce Mapper class for WARC records.
@@ -65,7 +65,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
 
         // WARC headers
         final JSONObject outputJsonDoc = new JSONObject();
-        final HashMap<String, String> warcHeaders = value.getHeader().getHeaderMetadata();
+        final TreeMap<String, String> warcHeaders = value.getHeader().getHeaderMetadata();
         outputJsonDoc.put(JSON_METADATA_KEY, warcHeaders);
 
         // content headers and body

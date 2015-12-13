@@ -24,9 +24,9 @@ import java.io.*;
 import java.util.TreeMap;
 
 /**
- * ClueWeb WARC record class.
+ * Generic WARC record parser class.
  *
- * This class is partially based on ClueWeb Tools <https://github.com/lintool/clueweb>.
+ * @author Janek Bevendorff
  */
 public class WarcRecord implements Writable
 {
@@ -35,7 +35,7 @@ public class WarcRecord implements Writable
     private final WarcHeader mWarcHeader;
     private byte[] mBodyHeaders = null;
     private byte[] mBodyContent = null;
-    private TreeMap<String,String> mHttpHeaderCache = null;
+    private TreeMap<String, String> mHttpHeaderCache = null;
 
     protected WarcRecord(final WarcHeader header)
     {
@@ -45,7 +45,8 @@ public class WarcRecord implements Writable
     /**
      * Our read line implementation. We cannot allow buffering here (for gzip
      * streams) so, we need to use DataInputStream. Also - we need to account
-     * for java's UTF8 implementation
+     * for java's UTF-8 implementation
+     * This method is based on the implementation in ClueWeb Tools &lt;https://github.com/lintool/clueweb&gt;.
      *
      * @param in the input data stream
      * @return the read line (or null if eof)
@@ -134,7 +135,7 @@ public class WarcRecord implements Writable
      * @param in           the data input stream
      * @param headerBuffer a blank string buffer to contain the WARC header
      * @param warcVersion  WARC version
-     * @return the content byts (w/ the headerBuffer populated)
+     * @return the content bytes (w/ the headerBuffer populated)
      * @throws java.io.IOException
      */
     private static byte[] readNextRecord(final DataInputStream in, final StringBuilder headerBuffer,
@@ -150,21 +151,16 @@ public class WarcRecord implements Writable
         boolean foundMark = false;
         byte[] retContent;
 
-        // cannot be using a buffered reader here!!!!
-        // just read the header
-        // first - find our WARC header
+        // find the next WARC header
         while (!foundMark && ((line = readLineFromInputStream(in)) != null)) {
             if (line.startsWith(warcVersion.toString())) {
                 foundMark = true;
             }
         }
-        // no WARC mark?
         if (!foundMark) {
             return null;
         }
 
-        // then read to the first newline
-        // make sure we get the content length here
         int contentLength = -1;
         while ((line = readLineFromInputStream(in)) != null && line.trim().length() != 0) {
             headerBuffer.append(line);
@@ -186,6 +182,7 @@ public class WarcRecord implements Writable
         if (contentLength < 0) {
             return null;
         }
+
         // now read the bytes of the content
         retContent = new byte[contentLength];
         int totalWant = contentLength;
