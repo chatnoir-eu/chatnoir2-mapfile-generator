@@ -62,7 +62,8 @@ public class WarcHeader implements Writable
         mContentLength = contentLength;
     }
 
-    public WarcHeader(final WarcHeader header) {
+    public WarcHeader(final WarcHeader header)
+    {
         mVersion       = header.mVersion;
         mContentLength = header.mContentLength;
         mMetadata.putAll(header.mMetadata);
