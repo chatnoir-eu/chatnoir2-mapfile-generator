@@ -8,8 +8,8 @@
 		<excludeFolder url="file://$MODULE_DIR$/.gradle"/>
 		<excludeFolder url="file://$MODULE_DIR$/build"/>
 	</contentEntry>
-	<lib name="Gradle: org.json:json:20150729" scope="COMPILE">
-		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.json/json/20150729/d71e3dbedb977d57f76453af0bb43eed162adc30/json-20150729-sources.jar!/"/>
+	<lib name="Gradle: org.json:json:20151123" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.json/json/20151123/9c179a1becb79c6af729c89f7b212b1cb5e68da3/json-20151123-sources.jar!/"/>
 	</lib>
 	<lib name="Gradle: org.apache.hadoop:hadoop-common:2.7.1" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.hadoop/hadoop-common/2.7.1/99f8505e6421723b65252f30e24cf7a19739cc93/hadoop-common-2.7.1-sources.jar!/"/>
@@ -61,6 +61,9 @@
 	</lib>
 	<lib name="Gradle: commons-configuration:commons-configuration:1.6" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-configuration/commons-configuration/1.6/2d24067548bf9022d03cfd6ca302e1f6c5d4936/commons-configuration-1.6-sources.jar!/"/>
+	</lib>
+	<lib name="Gradle: org.slf4j:slf4j-api:1.7.10" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.10/4d2725efe68b9943ba0deaf334bb27116ca6b687/slf4j-api-1.7.10-sources.jar!/"/>
 	</lib>
 	<lib name="Gradle: org.codehaus.jackson:jackson-core-asl:1.9.13" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.jackson/jackson-core-asl/1.9.13/6ed53c5ce78344e14296aa47769d67b10e1c7b2c/jackson-core-asl-1.9.13-sources.jar!/"/>
@@ -229,9 +232,6 @@
 	</lib>
 	<lib name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.3-1" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.2.3-1/c7853ba682b292a2f9d831af145cadc5313a7af1/jaxb-impl-2.2.3-1-sources.jar!/"/>
-	</lib>
-	<lib name="Gradle: org.slf4j:slf4j-api:1.7.10" scope="COMPILE">
-		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.10/4d2725efe68b9943ba0deaf334bb27116ca6b687/slf4j-api-1.7.10-sources.jar!/"/>
 	</lib>
 	<lib name="Gradle: commons-codec:commons-codec:1.6" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.6/61e9f9d11fe3e12ec62f633006e99d75fd7f19c8/commons-codec-1.6-sources.jar!/"/>

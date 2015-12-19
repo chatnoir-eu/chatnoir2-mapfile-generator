@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     compile 'org.apache.hadoop:hadoop-client:2.7.1'
-    compile 'org.slf4j:slf4j-api:1.4.3'
-    compile 'org.json:json:20150729'
+    compile 'org.json:json:20151123'
     compile files("$projectDir/../webis-uuid/jar/webis-uuid.jar");
 }
