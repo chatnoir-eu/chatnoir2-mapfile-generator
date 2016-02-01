@@ -112,6 +112,9 @@ public class MapFileGenerator extends MapFileTool
         final Configuration conf = getConf();
         conf.set("mapfile.uuid.prefix", uuidPrefix);
 
+        // enable block compression
+        conf.set(FileOutputFormat.COMPRESS_TYPE, "BLOCK");
+
         final Job job = Job.getInstance(conf);
         job.setJobName(String.format("mapfile-generator-%s", inputFormat));
         job.setJarByClass(MapFileGenerator.class);
@@ -131,9 +134,9 @@ public class MapFileGenerator extends MapFileTool
         MultipleOutputs.addNamedOutput(job, MapReduceBase.URI_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
 
         FileInputFormat.setInputPaths(job, inputPath);
-        MapFileOutputFormat.setOutputPath(job, new Path(outputPath));
-        MapFileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
-        MapFileOutputFormat.setCompressOutput(job, true);
+        FileOutputFormat.setOutputPath(job, new Path(outputPath));
+        FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
+        FileOutputFormat.setCompressOutput(job, true);
 
         job.waitForCompletion(true);
 
