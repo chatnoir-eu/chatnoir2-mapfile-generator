@@ -170,8 +170,18 @@ public class WarcRecord implements Writable
             return null;
         }
 
+        // read WARC header block
         int contentLength = -1;
-        while ((line = readLineFromInputStream(in)) != null && line.trim().length() != 0) {
+        while ((line = readLineFromInputStream(in)) != null) {
+            if (line.trim().length() != 0) {
+                if (contentLength < 0) {
+                    // continue when we haven't found a Content-Length header yet,
+                    // since we are probably dealing with not sufficiently sanitized WARC-Target-URI headers
+                    continue;
+                }
+                // break once we reached the end of the header block
+                break;
+            }
             headerBuffer.append(line);
             headerBuffer.append(NEWLINE);
             String[] thisHeaderPieceParts = line.split(":", 2);
