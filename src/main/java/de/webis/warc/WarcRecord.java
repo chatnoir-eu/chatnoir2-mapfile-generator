@@ -173,7 +173,7 @@ public class WarcRecord implements Writable
         // read WARC header block
         int contentLength = -1;
         while ((line = readLineFromInputStream(in)) != null) {
-            if (line.trim().length() != 0) {
+            if (line.trim().length() == 0) {
                 if (contentLength < 0) {
                     // continue when we haven't found a Content-Length header yet,
                     // since we are probably dealing with not sufficiently sanitized WARC-Target-URI headers
