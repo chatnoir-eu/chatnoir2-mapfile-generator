@@ -15,13 +15,13 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.inputformats;
+package de.webis.chatnoir2.mapfile_generator.inputformats;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import de.webis.warc.WarcHeader;
-import de.webis.warc.WarcRecord;
+import de.webis.chatnoir2.mapfile_generator.warc.WarcHeader;
+import de.webis.chatnoir2.mapfile_generator.warc.WarcRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;

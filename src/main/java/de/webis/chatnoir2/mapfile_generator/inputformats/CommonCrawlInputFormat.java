@@ -15,17 +15,17 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.inputformats;
+package de.webis.chatnoir2.mapfile_generator.inputformats;
 
-import de.webis.warc.WarcHeader;
+import de.webis.chatnoir2.mapfile_generator.warc.WarcHeader;
 
 /**
- * Input format class for ClueWeb12 WARC records
+ * Input format class for CommonCrawl WARC records
  */
-public class ClueWeb12InputFormat extends WarcInputFormat
+public class CommonCrawlInputFormat extends WarcInputFormat
 {
-    public ClueWeb12InputFormat()
+    public CommonCrawlInputFormat()
     {
-        super(WarcHeader.WarcVersion.WARC10, "WARC-TREC-ID");
+        super(WarcHeader.WarcVersion.WARC10);
     }
 }

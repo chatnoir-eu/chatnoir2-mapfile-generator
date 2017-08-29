@@ -15,9 +15,9 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.mapreduce;
+package de.webis.chatnoir2.mapfile_generator.mapreduce;
 
-import de.webis.warc.WarcRecord;
+import de.webis.chatnoir2.mapfile_generator.warc.WarcRecord;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Counter;
 import org.json.JSONObject;

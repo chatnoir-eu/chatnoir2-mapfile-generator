@@ -15,7 +15,7 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.mapreduce;
+package de.webis.chatnoir2.mapfile_generator.mapreduce;
 
 import de.webis.WebisUUID;
 import org.apache.hadoop.io.Text;

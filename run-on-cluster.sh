@@ -7,7 +7,7 @@
 # $input_path and $output_path are HDFS paths, $JAR_OUT_PATH is the compile output
 # path on your local file system.
 
-JAR_OUT_PATH="$(dirname "$0")/out/artifacts/mapfile_generator_jar"
+JAR_OUT_PATH="$(dirname "$0")/build/libs"
 
 if [ "$1" == "09" ] || [ "$1" == "12" ]; then
     input_path="/corpora/clueweb/${1}/*/*/*"
@@ -23,4 +23,5 @@ else
 fi
 
 hadoop fs -rm -r "${output_path}"
-hadoop jar ${JAR_OUT_PATH}/mapfile-generator.jar de.webis.app.MapFileGenerator -prefix "${format}" -input "${input_path}" -format "${format}" -output "${output_path}"
+hadoop jar ${JAR_OUT_PATH}/mapfile-generator-*-all.jar de.webis.chatnoir2.mapfile_generator.app.MapFileGenerator \
+    -prefix "${format}" -input "${input_path}" -format "${format}" -output "${output_path}"

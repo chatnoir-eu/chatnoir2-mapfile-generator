@@ -15,7 +15,7 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.warc;
+package de.webis.chatnoir2.mapfile_generator.warc;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.xerces.impl.dv.util.Base64;

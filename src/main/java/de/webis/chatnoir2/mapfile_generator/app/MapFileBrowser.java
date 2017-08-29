@@ -15,10 +15,10 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.app;
+package de.webis.chatnoir2.mapfile_generator.app;
 
 import de.webis.WebisUUID;
-import de.webis.mapreduce.MapReduceBase;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.MapReduceBase;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;

@@ -15,15 +15,15 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.app;
+package de.webis.chatnoir2.mapfile_generator.app;
 
-import de.webis.inputformats.ClueWeb09InputFormat;
-import de.webis.inputformats.ClueWeb12InputFormat;
-import de.webis.inputformats.CommonCrawlInputFormat;
-import de.webis.mapreduce.MapReduceBase;
-import de.webis.mapreduce.WarcUUIDPartitioner;
-import de.webis.mapreduce.WarcMapper;
-import de.webis.mapreduce.WarcReducer;
+import de.webis.chatnoir2.mapfile_generator.inputformats.ClueWeb09InputFormat;
+import de.webis.chatnoir2.mapfile_generator.inputformats.ClueWeb12InputFormat;
+import de.webis.chatnoir2.mapfile_generator.inputformats.CommonCrawlInputFormat;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.MapReduceBase;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcUUIDPartitioner;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcMapper;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcReducer;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;

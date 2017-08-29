@@ -15,7 +15,7 @@
  * permissions and limitations under the License.
  */
 
-package de.webis.app;
+package de.webis.chatnoir2.mapfile_generator.app;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.Options;
