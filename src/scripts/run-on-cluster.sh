@@ -7,7 +7,7 @@
 # $input_path and $output_path are HDFS paths, $JAR_OUT_PATH is the compile output
 # path on your local file system.
 
-JAR_OUT_PATH="$(dirname "$0")/build/libs"
+JAR_OUT_PATH="$(dirname "$0")/../../build/libs"
 
 if [ "$1" == "09" ] || [ "$1" == "12" ]; then
     input_path="/corpora/clueweb/${1}/*/*/*"
