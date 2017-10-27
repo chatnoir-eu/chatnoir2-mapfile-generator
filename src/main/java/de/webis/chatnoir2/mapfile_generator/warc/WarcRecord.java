@@ -538,12 +538,17 @@ public class WarcRecord implements Writable
             return "UTF-32";
         }
 
-        // if we still have no definite encoding, check if the first 512 bytes contain binary content
+        // if we still have no definite encoding, check if the first 512 bytes contain binary data
         final int length = Math.min(512, mBodyContent.length);
+        int binaryCounter = 0;
         for (int i = 0; i < length; ++i) {
             if ((mBodyContent[i] >= (byte) 0x00 && mBodyContent[i] <= (byte) 0x08) ||
                     (mBodyContent[i] >= (byte) 0x0e && mBodyContent[i] <= (byte) 0x1a) ||
                     (mBodyContent[i] >= (byte) 0x1c && mBodyContent[i] <= (byte) 0x1f)) {
+                ++binaryCounter;
+            }
+            if (binaryCounter > 3) {
+                // declare as binary if more than 3 non-printable characters found
                 return null;
             }
         }
