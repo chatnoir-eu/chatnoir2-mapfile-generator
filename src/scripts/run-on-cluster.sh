@@ -9,16 +9,18 @@
 
 JAR_OUT_PATH="$(dirname "$0")/../../build/libs"
 
-if [ "$1" == "09" ] || [ "$1" == "12" ]; then
+if [ "$1" == "cw09" ] || [ "$1" == "cw12" ]; then
+    version=$(echo -n "$1" | cut -c3-4)
     input_path="/corpora/clueweb/${1}/*/*/*"
-    output_path="${1}-mapfile"
-    format="clueweb${1}"
-elif [ "$1" == "cc" ]; then
-    input_path="/corpora/corpus-commoncrawl/common-crawl/crawl-data/CC-MAIN-2015-11/segments/*/warc/*"
-    output_path="CC-MAIN-2015-11-mapfile"
+    output_path="${version}-mapfile"
+    format="clueweb${version}"
+elif [ "$1" == "cc1511" ] || [ "$1" == "cc1704" ]; then
+    version="CC-MAIN-20$(echo -n "$1" | cut -c3-4)-$(echo -n "$1" | cut -c5-6)"
+    input_path="/corpora/corpus-commoncrawl/common-crawl/crawl-data/${version}/segments/*/warc/*"
+    output_path="${version}-mapfile"
     format="commoncrawl"
 else
-    echo "USAGE: $(basename "$0") 09|12|cc"
+    echo "USAGE: $(basename "$0") cw09|cw12|cc1511|cc1704"
     exit 1
 fi
 
