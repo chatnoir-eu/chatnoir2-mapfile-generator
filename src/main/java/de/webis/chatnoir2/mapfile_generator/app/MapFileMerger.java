@@ -38,7 +38,7 @@ import java.util.Arrays;
 /**
  * MapFile merger.
  *
- * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
+ * @author Janek Bevendorff &lt;janek.bevendorff@uni-weimar.de&gt;
  */
 public class MapFileMerger extends MapFileTool
 {

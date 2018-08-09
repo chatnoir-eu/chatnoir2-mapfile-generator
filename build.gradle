@@ -1,19 +1,18 @@
-group 'de.webis.chatnoir2'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'com.github.johnrengelman.shadow'
+// Apply plugins
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-allprojects {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-}
+group = 'de.webis.chatnoir2'
+version = '1.0-SNAPSHOT'
+mainClassName = 'de.webis.chatnoir2.mapfile_generator.app.MapFileGenerator'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-}
+// Set source file encoding
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+javadoc.options.encoding = 'UTF-8'
 
 buildscript {
     repositories {
@@ -24,14 +23,40 @@ buildscript {
     }
 }
 
-dependencies {
-    compile group: 'org.apache.hadoop', name: 'hadoop-client', version: '2.7.4'
-    compile group: 'org.json', name: 'json', version: '20170516'
-    compile files("$projectDir/../webis-uuid/jar/webis-uuid.jar");
-}
-
 jar {
     manifest {
-        attributes 'Main-Class': 'de.webis.chatnoir2.mapfile_generator.app.MapFileGenerator'
+        attributes 'Main-Class': mainClassName
     }
 }
+
+dependencies {
+    implementation group: 'org.apache.hadoop', name: 'hadoop-client', version: '2.7.4'
+    implementation group: 'org.json', name: 'json', version: '20170516'
+    implementation group: 'de.webis.corpora', name: 'webis-uuid', version: '1.0'
+}
+
+// Set POM definition
+ext.pomDef = {
+    name = 'chatnoir2-mapfile-generator'
+    description = 'ChatNoir Corpus MapFile Generator'
+    url = 'https://webis.de'
+    licenses {
+        license {
+            name = 'MIT License'
+            url = 'https://opensource.org/licenses/MIT'
+        }
+    }
+    developers {
+        developer {
+            name = 'Janek Bevendorff'
+            email = 'janek.bevendorff@uni-weimar.de'
+        }
+    }
+    organization {
+        name = 'Webis'
+        url = 'https://webis.de'
+    }
+}
+
+// Include Artifactory configuration
+apply from: 'artifactory.gradle'

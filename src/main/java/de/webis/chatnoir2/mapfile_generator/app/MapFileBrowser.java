@@ -43,7 +43,7 @@ import java.util.UUID;
 /**
  * MapFile browser.
  *
- * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
+ * @author Janek Bevendorff &lt;janek.bevendorff@uni-weimar.de&gt;
  */
 public class MapFileBrowser extends MapFileTool
 {

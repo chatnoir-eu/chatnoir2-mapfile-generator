@@ -153,7 +153,7 @@ public class WarcHeader implements Writable
     /**
      * Get WARC headers as case-insensitive TreeMap.
      *
-     * @return Headers as Key->Value TreeMap
+     * @return Headers as Key-&gt;Value TreeMap
      */
     public TreeMap<String, String> getHeaderMetadata()
     {

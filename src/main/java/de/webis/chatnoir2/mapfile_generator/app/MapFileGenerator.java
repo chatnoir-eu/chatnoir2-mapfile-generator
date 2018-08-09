@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * Generic MapFile generator for web corpora.
  *
- * @author Janek Bevendorff <janek.bevendorff@uni-weimar.de>
+ * @author Janek Bevendorff &lt;janek.bevendorff@uni-weimar.de&gt;
  */
 public class MapFileGenerator extends MapFileTool
 {
