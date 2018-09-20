@@ -33,6 +33,7 @@ dependencies {
     implementation group: 'org.apache.hadoop', name: 'hadoop-client', version: '2.7.4'
     implementation group: 'org.json', name: 'json', version: '20170516'
     implementation group: 'de.webis.corpora', name: 'webis-uuid', version: '1.0'
+    implementation group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.1.0'
 }
 
 // Set POM definition

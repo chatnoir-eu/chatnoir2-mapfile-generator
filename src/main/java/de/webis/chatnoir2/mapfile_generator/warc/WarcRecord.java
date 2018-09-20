@@ -1,6 +1,6 @@
 /*
  * Webis MapFile Generator.
- * Copyright (C) 2015-2017 Janek Bevendorff, Webis Group
+ * Copyright (C) 2015-2018 Janek Bevendorff, Webis Group
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,6 +27,7 @@ package de.webis.chatnoir2.mapfile_generator.warc;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.xerces.impl.dv.util.Base64;
+import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.*;
 import java.util.TreeMap;
@@ -520,35 +521,27 @@ public class WarcRecord implements Writable
             }
         }
 
-        // if no charset found, try to find Byte Order Marks
-        if (4 <= mBodyContent.length &&
-                mBodyContent[0] == (byte) 0xef && mBodyContent[1] == (byte) 0xbb && mBodyContent[2] == (byte) 0xbf) {
-            return "UTF-8";
-        }
-        if (4 <= mBodyContent.length &&
-                ((mBodyContent[0] == (byte) 0xfe && mBodyContent[1] == (byte) 0xff) ||
-                        (mBodyContent[0] == (byte) 0xff && mBodyContent[1] == (byte) 0xfe))) {
-            return "UTF-16";
-        }
-        if (8 <= mBodyContent.length &&
-                ((mBodyContent[0] == (byte) 0x00 && mBodyContent[1] == (byte) 0x00 &&
-                        mBodyContent[2] == (byte) 0xfe  && mBodyContent[3] == (byte) 0xff) ||
-                        (mBodyContent[0] == (byte) 0xff && mBodyContent[1] == (byte) 0xfe &&
-                                mBodyContent[2] == (byte) 0x00  && mBodyContent[3] == (byte) 0x00))) {
-            return "UTF-32";
+        // if no charset header found, try to detect encoding heuristically
+        UniversalDetector detector = new UniversalDetector(null);
+        detector.handleData(mBodyContent, 0, mBodyContent.length);
+        detector.dataEnd();
+        final String encoding = detector.getDetectedCharset();
+        detector.reset();
+        if (null != encoding) {
+            return encoding;
         }
 
-        // if we still have no definite encoding, check if the first 512 bytes contain binary data
+        // if we still have no definite encoding, check if the first 512 bytes contain non-printable data
         final int length = Math.min(512, mBodyContent.length);
         int binaryCounter = 0;
         for (int i = 0; i < length; ++i) {
             if ((mBodyContent[i] >= (byte) 0x00 && mBodyContent[i] <= (byte) 0x08) ||
-                    (mBodyContent[i] >= (byte) 0x0e && mBodyContent[i] <= (byte) 0x1a) ||
-                    (mBodyContent[i] >= (byte) 0x1c && mBodyContent[i] <= (byte) 0x1f)) {
+                    (mBodyContent[i] >= (byte) 0x0e && mBodyContent[i] <= (byte) 0x1f) ||
+                    (mBodyContent[i] >= (byte) 0x80 && mBodyContent[i] <= (byte) 0x9f)) {
                 ++binaryCounter;
             }
-            if (binaryCounter > 3) {
-                // declare as binary if more than 3 non-printable characters found
+            if (binaryCounter > 5) {
+                // declare as binary if more than 5 non-printable characters found
                 return null;
             }
         }
