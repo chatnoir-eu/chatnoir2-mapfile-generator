@@ -86,7 +86,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         // content headers and body
         final JSONObject payloadJson = new JSONObject();
         payloadJson.put(JSON_HEADERS_KEY, value.getContentHeaders());
-        payloadJson.put(JSON_BODY_KEY, value.getContent());
+        payloadJson.put(JSON_BODY_KEY, value.getContent(recordEncoding));
         payloadJson.put(JSON_PAYLOAD_ENCODING, null != recordEncoding ? "plain" : "base64");
         outputJsonDoc.put(JSON_PAYLOAD_KEY, payloadJson);
 

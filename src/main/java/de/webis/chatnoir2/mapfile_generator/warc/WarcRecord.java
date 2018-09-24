@@ -30,6 +30,7 @@ import org.apache.xerces.impl.dv.util.Base64;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -420,21 +421,31 @@ public class WarcRecord implements Writable
 
     /**
      * Get body part of content as String.
+     * The original encoding will automatically be deduced.
      *
-     * @return UTF-8-encoded String body part of content, base64-encoded String if content is binary
-     *         (check with {@link #getContentEncoding()}
+     * @return UTF-8-encoded body as String, base64-encoded String if body is binary
      */
     public String getContent()
     {
-        if (null == mBodyContent) {
+        return getContent(getContentEncoding());
+    }
+
+    /**
+     * Get body part of content as String with the given encoding.
+     *
+     * @param encoding encoding to apply, null for binary
+     * @return UTF-8-encoded body as String, base64-encoded String if body is binary
+     */
+    public String getContent(String encoding)
+    {
+        if (null == mBodyContent || mBodyContent.length == 0) {
             return "";
         }
 
-        final String encoding = getContentEncoding();
         if (null != encoding) {
             try {
                 return new String(mBodyContent, encoding);
-            } catch (UnsupportedEncodingException ignored) { }
+            } catch (UnsupportedEncodingException ignored) {}
         }
 
         return Base64.encode(mBodyContent);
@@ -451,11 +462,7 @@ public class WarcRecord implements Writable
             return "";
         }
 
-        try {
-            return new String(mBodyHeaders, "US-ASCII");
-        } catch (UnsupportedEncodingException e) {
-            return new String(mBodyHeaders);
-        }
+        return new String(mBodyHeaders, StandardCharsets.US_ASCII);
     }
 
     /**
