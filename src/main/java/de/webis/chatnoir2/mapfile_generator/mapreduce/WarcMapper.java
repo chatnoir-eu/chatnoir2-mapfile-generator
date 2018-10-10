@@ -27,6 +27,7 @@ package de.webis.chatnoir2.mapfile_generator.mapreduce;
 
 import de.webis.chatnoir2.mapfile_generator.warc.WarcRecord;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
 import org.json.JSONObject;
 
@@ -45,6 +46,8 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
     protected static Counter mGeneratedCounter;
     protected static Counter mBinaryRecordCounter;
 
+    protected static Text OUTPUT_KEY_PREFIXED;
+
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException
     {
@@ -53,6 +56,8 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         mSkippedRecordCounter = context.getCounter(RecordCounters.SKIPPED_RECORDS);
         mGeneratedCounter     = context.getCounter(RecordCounters.GENERATED_DOCS);
         mBinaryRecordCounter  = context.getCounter(RecordCounters.BINARY_RECORDS);
+
+        OUTPUT_KEY_PREFIXED = new Text();
     }
 
     @Override
@@ -90,9 +95,10 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         payloadJson.put(JSON_PAYLOAD_ENCODING, null != recordEncoding ? "plain" : "base64");
         outputJsonDoc.put(JSON_PAYLOAD_KEY, payloadJson);
 
-        OUTPUT_KEY.set(DATA_OUTPUT_NAME + generateUUID(recordId).toString());
+        OUTPUT_KEY.set(generateUUID(recordId).toString());
+        OUTPUT_KEY_PREFIXED.set(DATA_OUTPUT_NAME + OUTPUT_KEY);
         OUTPUT_DOC.set(outputJsonDoc.toString());
-        context.write(OUTPUT_KEY, OUTPUT_DOC);
+        context.write(OUTPUT_KEY_PREFIXED, OUTPUT_DOC);
 
         final String uri = warcHeaders.get("WARC-Target-URI");
         if (null != uri && value.getRecordType().equals("response")) {

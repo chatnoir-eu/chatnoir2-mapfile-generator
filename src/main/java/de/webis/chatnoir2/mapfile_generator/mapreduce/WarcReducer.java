@@ -62,9 +62,7 @@ public class WarcReducer extends Reducer<Text, Text, Text, Text> implements MapR
             return;
 
         final Text data = it.next();
-
-        final String strKey  = key.toString();
-        final String strData = data.toString();
+        final String strKey = key.toString();
 
         // strip prefixes from composite keys
         if (strKey.startsWith(DATA_OUTPUT_NAME)) {
@@ -73,8 +71,6 @@ public class WarcReducer extends Reducer<Text, Text, Text, Text> implements MapR
             mMapFileDataCounter.increment(1);
         } else if (strKey.startsWith(URI_OUTPUT_NAME)) {
             key.set(strKey.substring(URI_OUTPUT_NAME.length()));
-            if (strData.startsWith(URI_OUTPUT_NAME))
-                data.set(strData.substring(URI_OUTPUT_NAME.length()));
             mMultipleOutputs.write(URI_OUTPUT_NAME, key, data);
             mMapFileURICounter.increment(1);
         } else {
