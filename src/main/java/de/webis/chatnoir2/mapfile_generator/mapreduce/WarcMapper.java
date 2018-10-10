@@ -95,7 +95,7 @@ public class WarcMapper extends BaseMapper<LongWritable, WarcRecord>
         context.write(OUTPUT_KEY, OUTPUT_DOC);
 
         final String uri = warcHeaders.get("WARC-Target-URI");
-        if (null != uri) {
+        if (null != uri && value.getRecordType().equals("response")) {
             OUTPUT_URI.set(URI_OUTPUT_NAME + uri);
             context.write(OUTPUT_URI, OUTPUT_KEY);
         }

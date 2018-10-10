@@ -1,11 +1,9 @@
 // Apply plugins
 apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'de.webis.chatnoir2'
 version = '1.0-SNAPSHOT'
-mainClassName = 'de.webis.chatnoir2.mapfile_generator.app.MapFileGenerator'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -20,12 +18,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
-    }
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': mainClassName
     }
 }
 

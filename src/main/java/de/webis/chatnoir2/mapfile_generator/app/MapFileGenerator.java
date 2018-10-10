@@ -32,12 +32,14 @@ import de.webis.chatnoir2.mapfile_generator.mapreduce.MapReduceBase;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcUUIDPartitioner;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcMapper;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcReducer;
+import de.webis.chatnoir2.mapfile_generator.outputformats.MergingMapFileOutputFormat;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.compress.GzipCodec;
+import org.apache.hadoop.io.compress.BZip2Codec;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.*;
@@ -74,7 +76,7 @@ public class MapFileGenerator extends MapFileTool
                 withArgName("INPUT_FORMAT").
                 hasArg().
                 withLongOpt(INPUT_FORMAT_OPTION[0]).
-                withDescription("Input format for reading the corpus (e.g. clueweb09, clueweb12, ...)").
+                withDescription("Input format for reading the corpus (commoncrawl, clueweb09, clueweb12)").
                 isRequired().
                 create(INPUT_FORMAT_OPTION[1]));
         options.addOption(OptionBuilder.
@@ -112,16 +114,13 @@ public class MapFileGenerator extends MapFileTool
         }
 
         LOG.info("Tool name: " + MapFileGenerator.class.getSimpleName());
-        LOG.info(" - prefix: "  + uuidPrefix);
-        LOG.info(" - input: "   + inputPath);
-        LOG.info(" - format: "  + inputFormat);
-        LOG.info(" - output: "  + outputPath);
+        LOG.info(" - prefix: " + uuidPrefix);
+        LOG.info(" - input:  " + inputPath);
+        LOG.info(" - format: " + inputFormat);
+        LOG.info(" - output: " + outputPath);
 
         final Configuration conf = getConf();
         conf.set("mapfile.uuid.prefix", uuidPrefix);
-
-        // enable block compression
-        conf.set(FileOutputFormat.COMPRESS_TYPE, "BLOCK");
 
         final Job job = Job.getInstance(conf);
         job.setJobName(String.format("mapfile-generator-%s", inputFormat));
@@ -137,14 +136,17 @@ public class MapFileGenerator extends MapFileTool
         job.setPartitionerClass(classHelper.PARTITIONER);
         job.setReducerClass(classHelper.REDUCER);
 
-        LazyOutputFormat.setOutputFormatClass(job, MapFileOutputFormat.class);
-        MultipleOutputs.addNamedOutput(job, MapReduceBase.DATA_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
-        MultipleOutputs.addNamedOutput(job, MapReduceBase.URI_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
+        LazyOutputFormat.setOutputFormatClass(job, MergingMapFileOutputFormat.class);
+        MultipleOutputs.addNamedOutput(job, MapReduceBase.DATA_OUTPUT_NAME, MergingMapFileOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, MapReduceBase.URI_OUTPUT_NAME, MergingMapFileOutputFormat.class, Text.class, Text.class);
 
         FileInputFormat.setInputPaths(job, inputPath);
         FileOutputFormat.setOutputPath(job, new Path(outputPath));
-        FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
+
+        // enable block compression
         FileOutputFormat.setCompressOutput(job, true);
+        FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+        SequenceFileOutputFormat.setOutputCompressionType(job, SequenceFile.CompressionType.BLOCK);
 
         job.waitForCompletion(true);
 
@@ -159,7 +161,6 @@ public class MapFileGenerator extends MapFileTool
         LOG.info("Running " + MapFileGenerator.class.getSimpleName() + " with args " + Arrays.toString(args));
         System.exit(ToolRunner.run(new MapFileGenerator(), args));
     }
-
 
     /**
      * Helper class for determining classes of suitable InputFormats, Mappers,

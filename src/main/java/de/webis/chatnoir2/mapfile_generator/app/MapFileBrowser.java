@@ -148,7 +148,7 @@ public class MapFileBrowser extends MapFileTool
         if (printOnlyRecord) {
             System.out.println(entry.toString());
         } else if (verbose) {
-            System.out.printf("UUID=%s%nPART=%05d%nMAPFILE=%s%n%n-- RECORD BEGIN --%n%s%n-- RECORD END ---%n",
+            System.out.printf("UUID=%s%nPART=%05d%nMAPFILE=%s%n%n--- RECORD BEGIN ---%n%s%n--- RECORD END ---%n",
                     uuid.toString(), partition, inputPathStr, entry.toString());
         } else {
             System.out.printf("%s%n%s%n", uuid.toString(), entry.toString());
@@ -173,8 +173,6 @@ public class MapFileBrowser extends MapFileTool
     {
         // turn off stupid INFO log messages
         Logger.getRootLogger().setLevel(Level.ERROR);
-        //Logger.getLogger(org.apache.hadoop.io.compress.zlib.ZlibFactory.class).setLevel(Level.ERROR);
-        //Logger.getLogger(org.apache.hadoop.io.compress.CodecPool.class).setLevel(Level.ERROR);
 
         // run the tool
         System.exit(ToolRunner.run(new MapFileBrowser(), args));
