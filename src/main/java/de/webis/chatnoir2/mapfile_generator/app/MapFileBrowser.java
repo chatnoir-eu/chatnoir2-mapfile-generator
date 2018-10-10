@@ -54,6 +54,7 @@ public class MapFileBrowser extends MapFileTool
     private static final String[] UUID_OPTION        = {"uuid",        "u"};
     private static final String[] RECORD_ONLY_OPTION = {"record-only", "r"};
     private static final String[] VERBOSE_OPTION     = {"verbose",     "v"};
+    private static final String[] URI_OPTION         = {"uri",         "l"};
 
     @Override
     @SuppressWarnings("static-access")
@@ -93,6 +94,10 @@ public class MapFileBrowser extends MapFileTool
                 withDescription("UUID of the record").
                 create(UUID_OPTION[1]));
         options.addOption(OptionBuilder.
+                withLongOpt(URI_OPTION[0]).
+                withDescription("Retrieve from URI MapFile instead of the data MapFile").
+                create(URI_OPTION[1]));
+        options.addOption(OptionBuilder.
                 withLongOpt(RECORD_ONLY_OPTION[0]).
                 withDescription("Print only record, not UUID").
                 create(RECORD_ONLY_OPTION[1]));
@@ -107,10 +112,17 @@ public class MapFileBrowser extends MapFileTool
             return ERROR;
         }
 
-        if (!cmdline.hasOption(UUID_OPTION[0]) &&
+        if (!cmdline.hasOption(UUID_OPTION[0]) && !cmdline.hasOption(URI_OPTION[0]) &&
                 !cmdline.hasOption(PREFIX_OPTION[0]) && !cmdline.hasOption(NAME_OPTION[0])) {
             System.err.println("You need to specify either -uuid or -prefix and -id.");
             return ERROR;
+        }
+        if (cmdline.hasOption(URI_OPTION[0]) && !cmdline.hasOption(NAME_OPTION[0])) {
+            System.err.println("You need to specify -name when -uri is set.");
+            return ERROR;
+        }
+        if (cmdline.hasOption(URI_OPTION[0]) && cmdline.hasOption(PREFIX_OPTION[0])) {
+            System.err.println("WARNING: -uri given, ignoring -prefix.");
         }
         if (cmdline.hasOption(UUID_OPTION[0]) &&
                 (cmdline.hasOption(PREFIX_OPTION[0]) || cmdline.hasOption(NAME_OPTION[0]))) {
@@ -125,23 +137,26 @@ public class MapFileBrowser extends MapFileTool
         final boolean printOnlyRecord = cmdline.hasOption(RECORD_ONLY_OPTION[0]);
         final boolean verbose         = cmdline.hasOption(VERBOSE_OPTION[0]);
 
-        final UUID uuid;
-        if (!uuidStr.isEmpty()) {
-            uuid = UUID.fromString(uuidStr);
+        final String recordId;
+        if (cmdline.hasOption(URI_OPTION[0])) {
+            recordId = uuidName;
+        } else if (!uuidStr.isEmpty()) {
+            recordId = uuidStr;
         } else {
-            uuid = WebisUUID.generateUUID(uuidPrefix, uuidName);
+            recordId = WebisUUID.generateUUID(uuidPrefix, uuidName).toString();
         }
-        final int partition = getPartition(uuid, numPartitions);
-        inputPathStr = String.format("%s/%s-r-%05d", inputPathStr, MapReduceBase.DATA_OUTPUT_NAME, partition);
+        final int partition = getPartition(recordId, numPartitions);
+        String mapfile = cmdline.hasOption(URI_OPTION[0]) ? MapReduceBase.URI_OUTPUT_NAME : MapReduceBase.DATA_OUTPUT_NAME;
+        inputPathStr = String.format("%s/%s-r-%05d", inputPathStr, mapfile, partition);
 
         final Configuration conf    = getConf();
         final Path inputPath        = new Path(inputPathStr);
         final MapFile.Reader reader = new MapFile.Reader(inputPath, conf);
 
-        final Text entry = (Text) reader.get(new Text(uuid.toString()), new Text());
+        final Text entry = (Text) reader.get(new Text(recordId), new Text());
         if (null == entry) {
             System.err.printf("No record found for UUID '%s' (prefix=%s, name=%s, part=%d)%n",
-                    uuid.toString(), uuidPrefix, uuidName, partition);
+                    recordId, uuidPrefix, uuidName, partition);
             return ERROR;
         }
 
@@ -149,9 +164,9 @@ public class MapFileBrowser extends MapFileTool
             System.out.println(entry.toString());
         } else if (verbose) {
             System.out.printf("UUID=%s%nPART=%05d%nMAPFILE=%s%n%n--- RECORD BEGIN ---%n%s%n--- RECORD END ---%n",
-                    uuid.toString(), partition, inputPathStr, entry.toString());
+                    recordId, partition, inputPathStr, entry.toString());
         } else {
-            System.out.printf("%s%n%s%n", uuid.toString(), entry.toString());
+            System.out.printf("%s%n%s%n", recordId, entry.toString());
         }
 
         return SUCCESS;
@@ -164,9 +179,9 @@ public class MapFileBrowser extends MapFileTool
      * @param numPartitions total number of partitions
      * @return calculated partition number
      */
-    protected int getPartition(final UUID uuid, final int numPartitions)
+    private int getPartition(final String uuid, final int numPartitions)
     {
-        return (uuid.toString().hashCode() % numPartitions + numPartitions) % numPartitions;
+        return (uuid.hashCode() % numPartitions + numPartitions) % numPartitions;
     }
 
     public static void main(final String[] args) throws Exception
