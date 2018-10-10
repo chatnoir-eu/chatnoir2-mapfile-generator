@@ -97,10 +97,12 @@ public class MergingMapFileOutputFormat extends MapFileOutputFormat
                 MapFile.Writer.compression(compressionType, codec));
 
         return new RecordWriter<WritableComparable<?>, Writable>() {
+            @Override
             public void write(WritableComparable<?> key, Writable value) throws IOException {
                 out.append(key, value);
             }
 
+            @Override
             public void close(TaskAttemptContext context) throws IOException {
                 out.close();
 
@@ -110,26 +112,37 @@ public class MergingMapFileOutputFormat extends MapFileOutputFormat
                     MapFile.Merger merger = new MapFile.Merger(conf);
                     Path[] sourcePaths = {realOutFile, workTempFile};
 
-                    // report progress every 30 seconds in a separate thread to avoid this task attempt being killed
+                    // check output file size every 30 seconds in a separate thread and report
+                    // progress if new size differs to avoid this task attempt being killed
                     Thread progressThread = new Thread(() -> {
+                        long lastSize = 0;
+                        final Path dataPath = new Path(workOutFile, "data");
                         while (!Thread.interrupted()) {
-                            context.progress();
                             try {
+                                long newSize = fs.getFileStatus(dataPath).getLen();
+                                if (lastSize != newSize) {
+                                    context.progress();
+                                    lastSize = newSize;
+                                }
                                 Thread.sleep(30000);
                             } catch (InterruptedException e) {
-                                break;
+                                return;
+                            } catch (IOException ignored) {
+                                // do nothing if file is not accessible, container will time out if it keeps happening
                             }
                         }
                     });
                     progressThread.start();
 
                     merger.merge(sourcePaths, false, workOutFile);
-                    fs.delete(workTempFile, true);
 
+                    // we are finished, shoot the progress thread
                     try {
                         progressThread.interrupt();
                         progressThread.join();
                     } catch (InterruptedException ignored) {}
+
+                    fs.delete(workTempFile, true);
                 } else {
                     LOG.debug("No existing map file found, promoting output...");
                     fs.rename(workTempFile, workOutFile);
