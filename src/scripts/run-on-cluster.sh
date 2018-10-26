@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Helper script for running the compiled JAR on a Hadoop cluster.
 # Supports ClueWeb09 (09), ClueWeb12 (12) and CommonCrawl (cc) at the moment.
@@ -33,7 +33,10 @@ else
 fi
 
 IFS=$'\n'
+COUNTER=-1
 for segment in $(hadoop fs -ls "${segments_path}" | awk '{ print $8; }'); do
+    COUNTER=$(($COUNTER + 1))
+
     if [ "$MIN_SEGMENT" != "" ] && [ "$(basename ${segment})" \< "$MIN_SEGMENT" ]; then
         continue
     fi
@@ -46,9 +49,10 @@ for segment in $(hadoop fs -ls "${segments_path}" | awk '{ print $8; }'); do
 
     hadoop jar ${JAR_OUT_PATH}/chatnoir2-mapfile-generator-*-all.jar \
         de.webis.chatnoir2.mapfile_generator.app.MapFileGenerator \
-        -prefix "${format}" -input "${input_path}" -format "${format}" -output "${OUTPUT_PATH}"
+        -prefix "${format}" -input "${input_path}" -format "${format}" \
+        -output "${OUTPUT_PATH}/segment-$(printf '%05d' ${COUNTER})" | tee -a job.log
 
-    if [ $? -ne 0 ]; then
+    if tail -n 100 job.log | grep -q "Job failed as tasks failed"; then
         echo "Job for segment $(basename ${segment}) failed!" >&2
         exit 1
     fi

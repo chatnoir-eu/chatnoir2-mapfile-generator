@@ -1,6 +1,6 @@
 /*
  * Webis MapFile Merger.
- * Copyright (C) 2015-2017 Janek Bevendorff, Webis Group
+ * Copyright (C) 2015-2018 Janek Bevendorff, Webis Group
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -42,8 +42,8 @@ import java.util.Arrays;
  */
 public class MapFileMerger extends MapFileTool
 {
-    private static final String[] INPUT_OPTION        = {"input",  "i"};
-    private static final String[] OUTPUT_OPTION       = {"output", "o"};
+    private static final String[] INPUT_OPTION  = {"input",  "i"};
+    private static final String[] OUTPUT_OPTION = {"output", "o"};
 
     @Override
     @SuppressWarnings("static-access")
@@ -73,9 +73,8 @@ public class MapFileMerger extends MapFileTool
         final String inputPathStr   = cmdline.getOptionValue(INPUT_OPTION[0]);
         final String outputPathStr  = cmdline.getOptionValue(OUTPUT_OPTION[0]);
 
-
         LOG.info("Tool name: " + MapFileMerger.class.getSimpleName());
-        LOG.info(" - input: "   + inputPathStr);
+        LOG.info(" - input:  "   + inputPathStr);
         LOG.info(" - output: "  + outputPathStr);
 
         final Configuration conf = getConf();
@@ -99,7 +98,7 @@ public class MapFileMerger extends MapFileTool
             return ERROR;
         }
 
-        merger.merge(pathList.toArray(new Path[pathList.size()]), false, outputPath);
+        merger.merge(pathList.toArray(new Path[0]), false, outputPath);
 
         return SUCCESS;
     }

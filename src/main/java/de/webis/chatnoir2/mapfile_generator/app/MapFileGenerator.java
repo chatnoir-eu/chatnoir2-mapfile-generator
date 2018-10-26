@@ -32,7 +32,6 @@ import de.webis.chatnoir2.mapfile_generator.mapreduce.MapReduceBase;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcUUIDPartitioner;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcMapper;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.WarcReducer;
-import de.webis.chatnoir2.mapfile_generator.outputformats.MergingMapFileOutputFormat;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -136,9 +135,9 @@ public class MapFileGenerator extends MapFileTool
         job.setPartitionerClass(classHelper.PARTITIONER);
         job.setReducerClass(classHelper.REDUCER);
 
-        LazyOutputFormat.setOutputFormatClass(job, MergingMapFileOutputFormat.class);
-        MultipleOutputs.addNamedOutput(job, MapReduceBase.DATA_OUTPUT_NAME, MergingMapFileOutputFormat.class, Text.class, Text.class);
-        MultipleOutputs.addNamedOutput(job, MapReduceBase.URI_OUTPUT_NAME, MergingMapFileOutputFormat.class, Text.class, Text.class);
+        LazyOutputFormat.setOutputFormatClass(job, MapFileOutputFormat.class);
+        MultipleOutputs.addNamedOutput(job, MapReduceBase.DATA_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, MapReduceBase.URI_OUTPUT_NAME, MapFileOutputFormat.class, Text.class, Text.class);
 
         FileInputFormat.setInputPaths(job, inputPath);
         FileOutputFormat.setOutputPath(job, new Path(outputPath));
