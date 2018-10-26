@@ -25,22 +25,29 @@
 
 package de.webis.chatnoir2.mapfile_generator.app;
 
+import de.webis.chatnoir2.mapfile_generator.inputformats.FileNamePassthroughInputFormat;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.FileNameMapper;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.MapFileReducer;
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.Options;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
-import org.apache.hadoop.io.MapFile;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.ToolRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * MapFile merger.
- *
- * @author Janek Bevendorff &lt;janek.bevendorff@uni-weimar.de&gt;
+ * Merger for map file generator batches.
+ * This tool merges all splits of the same name across the given set of input batches.
  */
-public class MapFileMerger extends MapFileTool
+public class MapFileBatchMerger extends MapFileTool
 {
     private static final String[] INPUT_OPTION  = {"input",  "i"};
     private static final String[] OUTPUT_OPTION = {"output", "o"};
@@ -73,32 +80,37 @@ public class MapFileMerger extends MapFileTool
         final String inputPathStr   = cmdline.getOptionValue(INPUT_OPTION[0]);
         final String outputPathStr  = cmdline.getOptionValue(OUTPUT_OPTION[0]);
 
-        LOG.info("Tool name: " + MapFileMerger.class.getSimpleName());
-        LOG.info(" - input:  "   + inputPathStr);
-        LOG.info(" - output: "  + outputPathStr);
+        LOG.info("Tool name: " + MapFileBatchMerger.class.getSimpleName());
+        LOG.info(" - input:  " + inputPathStr);
+        LOG.info(" - output: " + outputPathStr);
 
         final Configuration conf = getConf();
+        final Job job = Job.getInstance(conf);
+        job.setJobName("chatnoir-mapfile-merger");
+        job.setJarByClass(MapFileBatchMerger.class);
 
-        final MapFile.Merger merger = new MapFile.Merger(conf);
-        final FileSystem fs = FileSystem.get(conf);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(Text.class);
+        job.setMapperClass(FileNameMapper.class);
+
+        job.setReducerClass(MapFileReducer.class);
+        job.setOutputKeyClass(NullWritable.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        job.setInputFormatClass(FileNamePassthroughInputFormat.class);
+        job.setOutputFormatClass(NullOutputFormat.class);
+
         final Path inputPath = new Path(inputPathStr);
         final Path outputPath = new Path(outputPathStr);
+        FileInputFormat.setInputPaths(job, inputPath);
+        FileOutputFormat.setOutputPath(job, outputPath);
 
-        final FileStatus[] stat = fs.globStatus(inputPath);
-        final ArrayList<Path> pathList = new ArrayList<>();
-        for (final FileStatus s : stat) {
-            final Path p = s.getPath();
-            if (fs.isDirectory(p) && fs.exists(new Path(p.toString() + "/data"))) {
-                pathList.add(p);
-            }
-        }
+        // enable block compression
+        FileOutputFormat.setCompressOutput(job, true);
+        FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+        SequenceFileOutputFormat.setOutputCompressionType(job, SequenceFile.CompressionType.BLOCK);
 
-        if (pathList.isEmpty()) {
-            LOG.error("No mapfiles found in path.");
-            return ERROR;
-        }
-
-        merger.merge(pathList.toArray(new Path[0]), false, outputPath);
+        job.waitForCompletion(true);
 
         return SUCCESS;
     }
@@ -108,7 +120,7 @@ public class MapFileMerger extends MapFileTool
      */
     public static void main(final String[] args) throws Exception
     {
-        LOG.info("Running " + MapFileMerger.class.getSimpleName() + " with args " + Arrays.toString(args));
-        System.exit(ToolRunner.run(new MapFileMerger(), args));
+        LOG.info("Running " + MapFileBatchMerger.class.getSimpleName() + " with args " + Arrays.toString(args));
+        System.exit(ToolRunner.run(new MapFileBatchMerger(), args));
     }
 }
