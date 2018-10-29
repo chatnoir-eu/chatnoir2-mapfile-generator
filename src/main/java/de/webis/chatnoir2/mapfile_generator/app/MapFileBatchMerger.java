@@ -28,6 +28,7 @@ package de.webis.chatnoir2.mapfile_generator.app;
 import de.webis.chatnoir2.mapfile_generator.inputformats.FileNamePassthroughInputFormat;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.FileNameMapper;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.MapFileReducer;
+import de.webis.chatnoir2.mapfile_generator.mapreduce.PassthroughPartitioner;
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.Options;
 import org.apache.hadoop.conf.Configuration;
@@ -85,6 +86,10 @@ public class MapFileBatchMerger extends MapFileTool
         LOG.info(" - output: " + outputPathStr);
 
         final Configuration conf = getConf();
+
+        // disable speculative reduce execution to prevent two processes from writing to the same map file
+        conf.setBoolean("mapreduce.reduce.speculative", false);
+
         final Job job = Job.getInstance(conf);
         job.setJobName("chatnoir-mapfile-merger");
         job.setJarByClass(MapFileBatchMerger.class);
@@ -99,6 +104,7 @@ public class MapFileBatchMerger extends MapFileTool
 
         job.setInputFormatClass(FileNamePassthroughInputFormat.class);
         job.setOutputFormatClass(NullOutputFormat.class);
+        job.setPartitionerClass(PassthroughPartitioner.class);
 
         final Path inputPath = new Path(inputPathStr);
         final Path outputPath = new Path(outputPathStr);
