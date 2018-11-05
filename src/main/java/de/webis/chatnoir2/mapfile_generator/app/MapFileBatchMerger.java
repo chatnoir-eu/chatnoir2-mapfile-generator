@@ -90,8 +90,8 @@ public class MapFileBatchMerger extends MapFileTool
         // disable speculative reduce execution to prevent two processes from writing to the same map file
         conf.setBoolean("mapreduce.reduce.speculative", false);
 
-        // set task timeout to 20 minutes
-        conf.setInt("mapreduce.task.timeout", 1200000);
+        // set task timeout to 35 minutes
+        conf.setInt("mapreduce.task.timeout", 2100000);
 
         final Job job = Job.getInstance(conf);
         job.setJobName("chatnoir-mapfile-merger");
