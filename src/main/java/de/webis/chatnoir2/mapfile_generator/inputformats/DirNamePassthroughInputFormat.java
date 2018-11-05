@@ -34,10 +34,12 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
+import java.io.IOException;
+
 /**
- * Input format that only passes through file names.
+ * Input format that only passes through directory names.
  */
-public class FileNamePassthroughInputFormat extends FileInputFormat<Text, NullWritable>
+public class DirNamePassthroughInputFormat extends FileInputFormat<Text, NullWritable>
 {
     @Override
     public RecordReader<Text, NullWritable> createRecordReader(InputSplit split, TaskAttemptContext context)
@@ -55,12 +57,14 @@ public class FileNamePassthroughInputFormat extends FileInputFormat<Text, NullWr
     {
         private boolean mIsRead = false;
         private FileSplit mSplit = null;
+        private TaskAttemptContext mContext = null;
 
         @Override
         public void initialize(InputSplit split, TaskAttemptContext context)
         {
             mIsRead = false;
             mSplit = (FileSplit) split;
+            mContext = context;
         }
 
         @Override
@@ -74,9 +78,12 @@ public class FileNamePassthroughInputFormat extends FileInputFormat<Text, NullWr
         }
 
         @Override
-        public Text getCurrentKey()
-        {
-            return new Text(mSplit.getPath().toString());
+        public Text getCurrentKey() throws IOException {
+            Path path = mSplit.getPath();
+            if (path.getFileSystem(mContext.getConfiguration()).isFile(path)) {
+                path = path.getParent();
+            }
+            return new Text(path.toString());
         }
 
         @Override
