@@ -34,7 +34,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Reducer for merging map files.
@@ -44,7 +44,8 @@ public class MapFileReducer extends Reducer<Text, Text, NullWritable, NullWritab
     @Override
     public void reduce(final Text key, final Iterable<Text> values, final Context context) throws IOException
     {
-        ArrayList<Path> paths = new ArrayList<>();
+        // deduplicate paths
+        HashSet<Path> paths = new HashSet<>();
         for (Text value: values) {
             paths.add(new Path(value.toString()));
         }

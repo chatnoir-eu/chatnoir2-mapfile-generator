@@ -25,7 +25,7 @@
 
 package de.webis.chatnoir2.mapfile_generator.app;
 
-import de.webis.chatnoir2.mapfile_generator.inputformats.DirNamePassthroughInputFormat;
+import de.webis.chatnoir2.mapfile_generator.inputformats.DirnamePassthroughInputFormat;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.FileNameMapper;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.MapFileReducer;
 import de.webis.chatnoir2.mapfile_generator.mapreduce.PassthroughPartitioner;
@@ -105,7 +105,7 @@ public class MapFileBatchMerger extends MapFileTool
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(NullWritable.class);
 
-        job.setInputFormatClass(DirNamePassthroughInputFormat.class);
+        job.setInputFormatClass(DirnamePassthroughInputFormat.class);
         job.setOutputFormatClass(NullOutputFormat.class);
         job.setPartitionerClass(PassthroughPartitioner.class);
 

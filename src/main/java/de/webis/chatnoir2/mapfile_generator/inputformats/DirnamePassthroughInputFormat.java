@@ -39,7 +39,7 @@ import java.io.IOException;
 /**
  * Input format that only passes through directory names.
  */
-public class DirNamePassthroughInputFormat extends FileInputFormat<Text, NullWritable>
+public class DirnamePassthroughInputFormat extends FileInputFormat<Text, NullWritable>
 {
     @Override
     public RecordReader<Text, NullWritable> createRecordReader(InputSplit split, TaskAttemptContext context)
@@ -55,34 +55,29 @@ public class DirNamePassthroughInputFormat extends FileInputFormat<Text, NullWri
 
     public class PassthroughRecordReader extends RecordReader<Text, NullWritable>
     {
-        private boolean mIsRead = false;
-        private FileSplit mSplit = null;
+        private Path mPath = null;
         private TaskAttemptContext mContext = null;
 
         @Override
         public void initialize(InputSplit split, TaskAttemptContext context)
         {
-            mIsRead = false;
-            mSplit = (FileSplit) split;
+            mPath = ((FileSplit) split).getPath();
             mContext = context;
         }
 
         @Override
         public boolean nextKeyValue()
         {
-            if (!mIsRead) {
-                mIsRead = true;
-                return true;
-            }
-            return false;
+            return mPath != null;
         }
 
         @Override
         public Text getCurrentKey() throws IOException {
-            Path path = mSplit.getPath();
-            if (path.getFileSystem(mContext.getConfiguration()).isFile(path)) {
-                path = path.getParent();
+            if (mPath.getFileSystem(mContext.getConfiguration()).isFile(mPath)) {
+                mPath = mPath.getParent();
             }
+            Path path = mPath;
+            mPath = null;
             return new Text(path.toString());
         }
 
@@ -95,7 +90,7 @@ public class DirNamePassthroughInputFormat extends FileInputFormat<Text, NullWri
         @Override
         public float getProgress()
         {
-            return mIsRead ? 1.0f : 0.0f;
+            return mPath == null ? 1.0f : 0.0f;
         }
 
         @Override
