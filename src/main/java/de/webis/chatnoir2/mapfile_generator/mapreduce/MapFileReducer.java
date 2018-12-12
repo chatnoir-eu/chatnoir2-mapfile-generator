@@ -62,24 +62,27 @@ public class MapFileReducer extends Reducer<Text, Text, NullWritable, NullWritab
         MapFile.Merger merger = new MapFile.Merger(context.getConfiguration());
         Path[] sourcePaths = paths.toArray(new Path[0]);
 
-        // check output file size every 30 seconds in a separate thread and report
-        // progress if new size differs to avoid this task attempt being killed
+        // Check output file size every 30 seconds in a separate thread and report
+        // progress if new size differs to avoid this task attempt being killed.
         Thread progressThread = new Thread(() -> {
             long lastSize = 0;
             final Path outDataFile = new Path(outMapFile, "data");
 
             while (!Thread.interrupted()) {
                 try {
+                    Thread.sleep(30000);
+
                     long newSize = fs.getFileStatus(outDataFile).getLen();
                     if (lastSize != newSize) {
                         context.progress();
                         lastSize = newSize;
                     }
-                    Thread.sleep(30000);
                 } catch (InterruptedException e) {
                     return;
-                } catch (IOException ignored) {
-                    // do nothing if file is not accessible, container will time out if it keeps happening
+                } catch (IOException e) {
+                    // If file is not accessible, log error and then do nothing.
+                    // The container will time out if it keeps happening.
+                    LOG.error("Failure retrieving map file status (retrying, error may be temporary)", e);
                 }
             }
         });
