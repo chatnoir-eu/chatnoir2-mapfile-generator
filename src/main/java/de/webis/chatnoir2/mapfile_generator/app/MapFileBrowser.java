@@ -57,7 +57,7 @@ public class MapFileBrowser extends MapFileTool
     private static final String[] URI_OPTION         = {"uri",         "l"};
 
     @Override
-    @SuppressWarnings("static-access")
+    @SuppressWarnings({"static-access", "Duplicates"})
     public int run(final String[] args) throws Exception
     {
         final Options options = new Options();

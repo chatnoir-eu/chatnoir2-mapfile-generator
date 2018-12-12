@@ -54,7 +54,7 @@ public class MapFileBatchMerger extends MapFileTool
     private static final String[] OUTPUT_OPTION = {"output", "o"};
 
     @Override
-    @SuppressWarnings("static-access")
+    @SuppressWarnings({"static-access", "Duplicates"})
     public int run(final String[] args) throws Exception
     {
         final Options options = new Options();
